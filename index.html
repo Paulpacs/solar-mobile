@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Paulpacs Solar - Mobile</title>
+<style>
+:root{
+  color-scheme:dark;
+  --cyan:#30e5ff;
+  --green:#4cffb0;
+  --gold:#ffc247;
+  --text:#f4fbff;
+  --bg:#020916;
+  --card:#061a30eF;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:12px;
+  background:radial-gradient(ellipse at 50% 0%,#082956,#020916 60%);
+  color:var(--text);
+  font:14px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  border:1px solid #124b7b;
+  border-radius:12px;
+  background:#04162beF;
+}
+.brand{font-weight:850;letter-spacing:1px;color:#eaf7ff}
+.brand small{display:block;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700}
+.live{font-size:10px;color:var(--green);border:1px solid #1c775b;border-radius:99px;padding:4px 8px}
+.live:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;box-shadow:0 0 8px var(--green);animation:blink 1.4s infinite}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.card{
+  border:1px solid #15416a;
+  border-radius:12px;
+  background:var(--card);
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.card.full{grid-column: span 2;}
+
+.label{
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.6px;
+  color:#8beaff;
+  margin-bottom:4px;
+}
+.value{
+  font-size:24px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+  line-height:1.1;
+}
+.unit{font-size:10px;color:#a6d6f2;margin-top:2px}
+
+/* Colors for specific cards */
+.card.solar{border-color:var(--gold);box-shadow:0 0 15px #ffc24720}
+.card.solar .label{color:#ffda83}
+.card.solar .value{color:var(--gold)}
+
+.card.inverter{border-color:var(--green);box-shadow:0 0 15px #4cffb020}
+.card.inverter .label{color:#7dffca}
+.card.inverter .value{color:var(--green)}
+
+.card.battery{border-color:#a6ff70;box-shadow:0 0 15px #a6ff7020}
+.card.battery .label{color:#caff9c}
+.card.battery .value{color:#a6ff70}
+
+.card.gridcard{border-color:var(--cyan);box-shadow:0 0 15px #00cfff20}
+.card.gridcard .label{color:#8beaff}
+.card.gridcard .value{color:var(--cyan)}
+
+/* AC Indicator */
+.ac-on{border-color:#ff9b54;box-shadow:0 0 15px #ff9b5460}
+.ac-on .label{color:#ffca9b}
+.ac-on .value{color:#ff9b54}
+
+@keyframes blink{50%{opacity:.35}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">PAULPACS · SOLAR<small>MOBILE TELEMETRY</small></div>
+  <div class="live">LIVE</div>
+</header>
+
+<div class="grid">
+  <!-- Top Row -->
+  <div class="card solar">
+    <span class="label">PV POWER</span>
+    <span class="value" id="pvpower">—</span>
+    <span class="unit">Watts</span>
+  </div>
+  
+  <div class="card solar">
+    <span class="label">PV VOLTAGE</span>
+    <span class="value" id="pvvoltage">—</span>
+    <span class="unit">Volts</span>
+  </div>
+
+  <!-- Inverter & AC -->
+  <div class="card inverter">
+    <span class="label">INVERTER OUTPUT</span>
+    <span class="value" id="invpower">—</span>
+    <span class="unit">Watts</span>
+  </div>
+
+  <div class="card" id="acCard">
+    <span class="label">WINDOW AC</span>
+    <span class="value" id="acValue">OFF</span>
+    <span class="unit">&gt; 1200W rule</span>
+  </div>
+
+  <!-- Battery -->
+  <div class="card battery">
+    <span class="label">BATTERY SOC</span>
+    <span class="value" id="soc">—</span>
+    <span class="unit">% Charge</span>
+  </div>
+
+  <div class="card battery">
+    <span class="label">BATTERY VOLTAGE</span>
+    <span class="value" id="battery">—</span>
+    <span class="unit">Volts</span>
+  </div>
+
+  <!-- Grid (Full Width) -->
+  <div class="card gridcard full">
+    <span class="label">TOTAL GRID POWER</span>
+    <span class="value" id="totalgrid">—</span>
+    <span class="unit">Watts (Whole House)</span>
+  </div>
+
+  <div class="card gridcard">
+    <span class="label">2ND FLOOR GRID</span>
+    <span class="value" id="floorgrid">—</span>
+    <span class="unit">Watts</span>
+  </div>
+
+  <div class="card gridcard">
+    <span class="label">GRID VOLTAGE</span>
+    <span class="value" id="gridv">—</span>
+    <span class="unit">Volts</span>
+  </div>
+
+  <!-- Environment (Full Width) -->
+  <div class="card solar full">
+    <span class="label">IRRADIANCE / CLOUDS</span>
+    <span class="value"><span id="irr">—</span> <span style="font-size:12px;color:#a6d6f2;">W/m²</span> / <span id="cloud">—</span> <span style="font-size:12px;color:#a6d6f2;">%</span></span>
+  </div>
+</div>
+
+<script>
+// The URL to your GitHub JSON file
+const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Paulpacs/solar-mobile/main/live_data.json';
+
+function num(v){ 
+  if(v===null||v===undefined||v===''||String(v).toLowerCase()==='nan') return null; 
+  const n=Number(v); 
+  return Number.isFinite(n)?n:null; 
+}
+
+function show(id, v, dec, unit='') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = v === null ? '—' : v.toFixed(dec) + (unit ? ' '+unit : '');
+}
+
+async function fetchData() {
+  try {
+    // We add ?t=timestamp to force the browser to bypass GitHub's CDN cache
+    const res = await fetch(GITHUB_JSON_URL + '?t=' + new Date().getTime());
+    const data = await res.json();
+    
+    // If the file is empty (just "{}"), do nothing yet
+    if (!data.updated_at) return;
+
+    // Update text values
+    show('pvpower', num(data.pv_power), 0);
+    show('pvvoltage', num(data.pv_voltage), 1);
+    show('invpower', num(data.inverter_power), 0);
+    show('battery', num(data.battery_voltage), 2);
+    show('soc', num(data.battery_soc), 0);
+    show('totalgrid', num(data.total_grid), 0);
+    show('floorgrid', num(data.floor_grid), 0);
+    show('gridv', num(data.grid_voltage), 1);
+    show('irr', num(data.irradiance), 0);
+    show('cloud', num(data.cloud_cover), 0);
+
+    // Logic for AC ON/OFF
+    const invPower = num(data.inverter_power);
+    const acCard = document.getElementById('acCard');
+    const acValue = document.getElementById('acValue');
+    
+    if (invPower !== null && invPower > 1200) {
+      acValue.textContent = 'ON';
+      acCard.classList.add('ac-on');
+    } else {
+      acValue.textContent = 'OFF';
+      acCard.classList.remove('ac-on');
+    }
+
+  } catch (e) {
+    console.error('Fetch failed:', e);
+  }
+}
+
+// Run immediately, then every 60 seconds
+fetchData();
+setInterval(fetchData, 60000);
+</script>
+</body>
+</html>
