@@ -99,7 +99,8 @@ body{
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-.total-grid { top: 46%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
+/* Adjusted Total Grid width slightly to accommodate the new line */
+.total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
 
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
@@ -153,51 +154,67 @@ body{
 /* --- ENERGY FLOW LINES --- */
 .flow-line {
   position: absolute;
-  background: rgba(48, 229, 255, 0.05); /* Very faint background line */
   z-index: 5;
-  display: none; /* Hidden by default */
+  display: none; 
+  border-radius: 2px;
 }
 
-/* The repeating dashed light effect */
-.flow-line.vertical {
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 10px,
-    var(--cyan) 10px,
-    var(--cyan) 25px
-  );
+/* Cyan PV Lines */
+.flow-line.cyan.vertical {
+  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--cyan) 10px, var(--cyan) 25px);
   box-shadow: 0 0 8px var(--cyan);
   animation: flowDown 0.8s linear infinite;
 }
-
-.flow-line.horizontal {
-  background: repeating-linear-gradient(
-    to right,
-    transparent,
-    transparent 10px,
-    var(--cyan) 10px,
-    var(--cyan) 25px
-  );
+.flow-line.cyan.horizontal {
+  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--cyan) 10px, var(--cyan) 25px);
   box-shadow: 0 0 8px var(--cyan);
   animation: flowRight 0.8s linear infinite;
 }
 
-/* Segment 1: PV Card down to Center */
+/* Gold Grid Lines */
+.flow-line.gold.horizontal {
+  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
+  box-shadow: 0 0 8px var(--gold);
+  animation: flowRight 0.8s linear infinite;
+}
+.flow-line.gold.vertical {
+  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
+  box-shadow: 0 0 8px var(--gold);
+  animation: flowDown 0.8s linear infinite;
+}
+.flow-line.gold.horizontal.reverse {
+  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
+  box-shadow: 0 0 8px var(--gold);
+  animation: flowLeft 0.8s linear infinite;
+}
+
+/* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 2px; height: 12%; }
-/* Segment 2: Center down to Floor between floors */
 .seg2 { top: 36%; left: 51%; width: 2px; height: 20%; }
-/* Segment 3: Floor horizontally to Inverter card */
 .seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
+
+/* Grid Segments (From tower to Total Grid card) */
+.grid-seg1 { top: 48%; left: 12%; width: 20%; height: 2px; }
+
+/* New Floor Grid Segments (Total -> Right -> Down -> Left -> Floor) */
+/* 1. Right from Total Grid */
+.grid-seg2 { top: 48%; left: 25%; width: 6%; height: 2px; }
+/* 2. Down to Floor Grid level */
+.grid-seg3 { top: 48%; left: 31%; width: 2px; height: 13%; }
+/* 3. Left into Floor Grid */
+.grid-seg4 { top: 61%; left: 18%; width: 13%; height: 2px; }
 
 @keyframes flowDown {
   0% { background-position: 0 0; }
   100% { background-position: 0 25px; }
 }
-
 @keyframes flowRight {
   0% { background-position: 0 0; }
   100% { background-position: 25px 0; }
+}
+@keyframes flowLeft {
+  0% { background-position: 0 0; }
+  100% { background-position: -25px 0; }
 }
 
 </style>
@@ -211,10 +228,17 @@ body{
     <div class="brand">PAULPACS · SOLAR HOME<small>SMART HOME ENERGY</small></div>
   </div>
 
-  <!-- FLOW LINES -->
-  <div class="flow-line seg1 vertical" id="flow1"></div>
-  <div class="flow-line seg2 vertical" id="flow2"></div>
-  <div class="flow-line seg3 horizontal" id="flow3"></div>
+  <!-- PV FLOW LINES (CYAN) -->
+  <div class="flow-line cyan seg1 vertical" id="flow1"></div>
+  <div class="flow-line cyan seg2 vertical" id="flow2"></div>
+  <div class="flow-line cyan seg3 horizontal" id="flow3"></div>
+
+  <!-- GRID FLOW LINES (GOLD) -->
+  <div class="flow-line gold grid-seg1 horizontal" id="gridFlow1"></div>
+  
+  <div class="flow-line gold grid-seg2 horizontal" id="floorFlow1"></div>
+  <div class="flow-line gold grid-seg3 vertical" id="floorFlow2"></div>
+  <div class="flow-line gold grid-seg4 horizontal reverse" id="floorFlow3"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -431,14 +455,16 @@ async function fetchData() {
 
     const pvPower = num(data.pv_power);
     const invPower = num(data.inverter_power);
+    const totalGrid = num(data.total_grid);
+    const floorGrid = num(data.floor_grid);
     const irr = num(data.irradiance);
     const cloud = num(data.cloud_cover);
 
     show('pvpower', pvPower, 0);
     show('pvvoltage', num(data.pv_voltage), 1);
     show('invpower', invPower, 0);
-    show('totalgrid', num(data.total_grid), 0);
-    show('floorgrid', num(data.floor_grid), 0);
+    show('totalgrid', totalGrid, 0);
+    show('floorgrid', floorGrid, 0);
     show('gridvoltage', num(data.grid_voltage), 1);
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
@@ -478,11 +504,28 @@ async function fetchData() {
     }
 
     // --- ENERGY FLOW LOGIC ---
-    const flows = ['flow1', 'flow2', 'flow3'];
+    // PV Flows (Cyan)
+    const pvFlows = ['flow1', 'flow2', 'flow3'];
     if (pvPower !== null && pvPower > 0) {
-      flows.forEach(id => document.getElementById(id).style.display = 'block');
+      pvFlows.forEach(id => document.getElementById(id).style.display = 'block');
     } else {
-      flows.forEach(id => document.getElementById(id).style.display = 'none');
+      pvFlows.forEach(id => document.getElementById(id).style.display = 'none');
+    }
+
+    // Main Grid Flow (Gold)
+    const gridFlow = document.getElementById('gridFlow1');
+    if (totalGrid !== null && totalGrid > 0) {
+      gridFlow.style.display = 'block';
+    } else {
+      gridFlow.style.display = 'none';
+    }
+
+    // 2nd Floor Grid Flow (Gold)
+    const floorFlows = ['floorFlow1', 'floorFlow2', 'floorFlow3'];
+    if (floorGrid !== null && floorGrid > 0) {
+      floorFlows.forEach(id => document.getElementById(id).style.display = 'block');
+    } else {
+      floorFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
   } catch (e) {
