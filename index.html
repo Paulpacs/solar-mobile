@@ -10,7 +10,7 @@
   --cyan:#30e5ff;
   --green:#4cffb0;
   --gold:#ffc247;
-  --orange:#ff6b00; 
+  --red:#ff2a2a; /* NEW: Bright Red */
   --text:#f4fbff;
   --card-bg: #03172beF;
 }
@@ -176,20 +176,20 @@ body{
   animation: flowLeft 0.8s linear infinite;
 }
 
-/* Orange Grid Lines */
-.flow-line.orange.horizontal {
-  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
-  box-shadow: 0 0 8px var(--orange);
+/* Red Grid Lines */
+.flow-line.red.horizontal {
+  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  box-shadow: 0 0 8px var(--red);
   animation: flowRight 0.8s linear infinite;
 }
-.flow-line.orange.vertical {
-  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
-  box-shadow: 0 0 8px var(--orange);
+.flow-line.red.vertical {
+  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  box-shadow: 0 0 8px var(--red);
   animation: flowDown 0.8s linear infinite;
 }
-.flow-line.orange.horizontal.reverse {
-  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
-  box-shadow: 0 0 8px var(--orange);
+.flow-line.red.horizontal.reverse {
+  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  box-shadow: 0 0 8px var(--red);
   animation: flowLeft 0.8s linear infinite;
 }
 
@@ -199,17 +199,17 @@ body{
 .seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
 
 /* Main Grid Segments (Tower to Total Grid card) */
-/* 1. Right from tower to center of card */
 .grid-seg1a { top: 30%; left: 5%; width: 12%; height: 2px; }
-/* 2. Down to top of card */
 .grid-seg1b { top: 30%; left: 17%; width: 2px; height: 16%; }
-/* 3. Left into center of card */
 .grid-seg1c { top: 46%; left: 12%; width: 5%; height: 2px; }
 
-/* 2nd Floor Grid Segments */
-.grid-seg2 { top: 48%; left: 25%; width: 6%; height: 2px; }
-.grid-seg3 { top: 48%; left: 31%; width: 2px; height: 13%; }
-.grid-seg4 { top: 61%; left: 18%; width: 13%; height: 2px; }
+/* 2nd Floor Grid Segments (Pushed further right) */
+/* 1. Right from Total Grid, extended further */
+.grid-seg2 { top: 48%; left: 25%; width: 12%; height: 2px; } 
+/* 2. Down to Floor Grid level (shifted right to match) */
+.grid-seg3 { top: 48%; left: 37%; width: 2px; height: 13%; }
+/* 3. Left into Floor Grid (longer path) */
+.grid-seg4 { top: 61%; left: 18%; width: 19%; height: 2px; }
 
 @keyframes flowDown {
   0% { background-position: 0 0; }
@@ -240,14 +240,14 @@ body{
   <div class="flow-line cyan seg2 vertical" id="flow2"></div>
   <div class="flow-line cyan seg3 horizontal" id="flow3"></div>
 
-  <!-- GRID FLOW LINES (ORANGE) -->
-  <div class="flow-line orange grid-seg1a horizontal" id="gridFlow1a"></div>
-  <div class="flow-line orange grid-seg1b vertical" id="gridFlow1b"></div>
-  <div class="flow-line orange grid-seg1c horizontal reverse" id="gridFlow1c"></div>
+  <!-- GRID FLOW LINES (RED) -->
+  <div class="flow-line red grid-seg1a horizontal" id="gridFlow1a"></div>
+  <div class="flow-line red grid-seg1b vertical" id="gridFlow1b"></div>
+  <div class="flow-line red grid-seg1c horizontal reverse" id="gridFlow1c"></div>
   
-  <div class="flow-line orange grid-seg2 horizontal" id="floorFlow1"></div>
-  <div class="flow-line orange grid-seg3 vertical" id="floorFlow2"></div>
-  <div class="flow-line orange grid-seg4 horizontal reverse" id="floorFlow3"></div>
+  <div class="flow-line red grid-seg2 horizontal" id="floorFlow1"></div>
+  <div class="flow-line red grid-seg3 vertical" id="floorFlow2"></div>
+  <div class="flow-line red grid-seg4 horizontal reverse" id="floorFlow3"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -521,7 +521,7 @@ async function fetchData() {
       pvFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // Main Grid Flow (Orange)
+    // Main Grid Flow (Red)
     const gridFlows = ['gridFlow1a', 'gridFlow1b', 'gridFlow1c'];
     if (totalGrid !== null && totalGrid > 0) {
       gridFlows.forEach(id => document.getElementById(id).style.display = 'block');
@@ -529,7 +529,7 @@ async function fetchData() {
       gridFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // 2nd Floor Grid Flow (Orange)
+    // 2nd Floor Grid Flow (Red)
     const floorFlows = ['floorFlow1', 'floorFlow2', 'floorFlow3'];
     if (floorGrid !== null && floorGrid > 0) {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'block');
