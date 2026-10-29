@@ -296,7 +296,8 @@ body{
 </div>
 
 <script>
-const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Paulpacs/solar-mobile/main/live_data.json';
+const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/live_data.json';
+const GITHUB_JSON_URL = ''; // We don't need this anymore
 
 const history = { pv: [], inv: [] };
 const MAX_POINTS = 21;
@@ -385,8 +386,12 @@ function recordSample(key,value){
 
 async function fetchData() {
   try {
-    const res = await fetch(GITHUB_JSON_URL + '?t=' + new Date().getTime());
-    const data = await res.json();
+    const res = await fetch(GITHUB_API_URL + '?t=' + new Date().getTime());
+    const apiData = await res.json();
+    
+    // GitHub API returns the file encoded in Base64. We decode it here:
+    const decodedContent = atob(apiData.content.replace(/\s/g, ''));
+    const data = JSON.parse(decodedContent);
     
     if (!data.updated_at) return;
 
