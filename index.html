@@ -95,6 +95,10 @@ body{
 .floor-grid { top: 54%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
+/* New AC Grid Voltage Card */
+.grid-volt { top: 67%; left: 5%; min-width: 80px; border-color: var(--gold); }
+.grid-volt .label { color: #ffda83; }
+
 .batt-soc { bottom: 23%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
 .batt-soc .label { color: #caff9c; }
 
@@ -106,7 +110,7 @@ body{
   bottom: 5%; 
   left: 7%; 
   width: 28%; 
-  height: 65px; /* Forced same height */
+  height: 65px; 
   border-color: #a6d6f2; 
   box-shadow: 0 0 15px #a6d6f230; 
   display: flex;
@@ -130,7 +134,7 @@ body{
   left: 52%; 
   transform: translateX(-50%); 
   width: 32%; 
-  height: 65px; /* Forced same height */
+  height: 65px; 
   border-color: #a6d6f2; 
   box-shadow: 0 0 15px #a6d6f230; 
   display: flex;
@@ -215,6 +219,13 @@ body{
     <span class="label">FLOOR GRID</span>
     <span class="value" id="floorgrid">—</span>
     <span class="unit">W</span>
+  </div>
+
+  <!-- New AC Grid Voltage Card -->
+  <div class="readout grid-volt">
+    <span class="label">GRID VOLTAGE</span>
+    <span class="value" id="gridvoltage">—</span>
+    <span class="unit">V</span>
   </div>
 
   <div class="readout batt-soc">
@@ -382,6 +393,7 @@ async function fetchData() {
     show('invpower', invPower, 0);
     show('totalgrid', num(data.total_grid), 0);
     show('floorgrid', num(data.floor_grid), 0);
+    show('gridvoltage', num(data.grid_voltage), 1); // Added Grid Voltage
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
