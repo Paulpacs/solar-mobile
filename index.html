@@ -97,14 +97,19 @@ body{
 
 .ac-read { top: 37%; right: 5%; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a60; }
 .ac-read .label { color: #ffca9b; }
+/* AC Inverter Mode */
+.ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
+.ac-read.inv-mode .label { color: #7dffca; }
+/* AC Grid Mode */
+.ac-read.grid-mode { border-color: var(--gold); box-shadow: 0 0 15px #ffc24760; }
+.ac-read.grid-mode .label { color: #ffda83; }
 
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
-
-/* Inverter Theme applied via JS */
+/* Floor Inverter Mode */
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .floor-grid.inv-mode .label { color: #7dffca; }
 
@@ -254,6 +259,9 @@ body{
 .inv-seg2 { bottom: 37%; right: 45%; width: 3px; height: 4.5%; }
 .inv-seg3 { bottom: 37%; right: 45%; width: 35%; height: 3px; }
 
+/* Inverter to AC Segment */
+.inv-to-ac { top: 42%; left: 75%; width: 3px; height: 12%; }
+
 </style>
 </head>
 <body>
@@ -291,6 +299,9 @@ body{
   <div class="flow-line inv-green vertical inv-seg2" id="invFlow2"></div>
   <div class="flow-line inv-green horizontal reverse inv-seg3" id="invFlow3"></div>
 
+  <!-- INVERTER TO AC LINE -->
+  <div class="flow-line inv-green vertical inv-to-ac" id="invToAcFlow"></div>
+
   <!-- CARDS -->
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -314,10 +325,12 @@ body{
       <span class="weather-unit">%</span>
     </div>
   </div>
+  
   <div class="readout ac-read" id="acCard">
-    <span class="label">WINDOW AC</span>
+    <span class="label" id="acLabel">WINDOW AC</span>
     <span class="value" id="acValue">OFF</span>
   </div>
+  
   <div class="readout inv-output">
     <span class="label">INVERTER</span>
     <span class="value" id="invpower">—</span>
@@ -329,7 +342,6 @@ body{
     <span class="unit">W</span>
   </div>
   
-  <!-- 2ND FLOOR CARD WITH DYNAMIC TEXT & CLASS -->
   <div class="readout floor-grid" id="floorGridCard">
     <span class="label" id="floorGridLabel">2ND FLR GRID</span>
     <span class="value" id="floorgrid">—</span>
@@ -587,19 +599,26 @@ async function fetchData() {
       floorLabel.textContent = '2ND FLR GRID';
     }
 
-    // --- AC LOGIC ---
+    // --- AC CARD DYNAMIC THEME & LINE LOGIC ---
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
-    const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
-    const isAcOn = (invPower !== null && invPower > 1200) || (floorGrid !== null && floorGrid > 1000);
-    if (isAcOn) {
+    const invToAcFlow = document.getElementById('invToAcFlow');
+    
+    const isAcGrid = (floorGrid !== null && floorGrid > 1000);
+    const isAcInverter = (invPower !== null && invPower > 1200);
+
+    if (isAcInverter) {
       acValue.textContent = 'ON';
-      acCard.classList.add('ac-on');
-      acFlows.forEach(id => document.getElementById(id).style.display = 'block');
+      acCard.className = 'readout ac-read inv-mode';
+      invToAcFlow.style.display = 'block';
+    } else if (isAcGrid) {
+      acValue.textContent = 'ON';
+      acCard.className = 'readout ac-read grid-mode';
+      invToAcFlow.style.display = 'none';
     } else {
       acValue.textContent = 'OFF';
-      acCard.classList.remove('ac-on');
-      acFlows.forEach(id => document.getElementById(id).style.display = 'none');
+      acCard.className = 'readout ac-read';
+      invToAcFlow.style.display = 'none';
     }
 
     // --- PV FLOW LOGIC ---
