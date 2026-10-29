@@ -16,7 +16,8 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  padding:10px;
+  /* Added a bit more padding at the bottom so graphs don't touch the screen edge */
+  padding:10px 10px 20px 10px; 
   background:radial-gradient(ellipse at 50% 0%,#082956,#020916 60%);
   color:var(--text);
   font:14px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;
@@ -30,7 +31,7 @@ body{
 .scene{
   position:relative;
   width:100%;
-  flex: 1; 
+  flex: 1; /* Takes up remaining space */
   border:1px solid #145080;
   border-radius:15px;
   background:#03132a;
@@ -39,9 +40,10 @@ body{
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  margin-bottom: 8px; /* Space between house and graphs */
 }
 
-/* The House Image (Changed to 'contain' so nothing is cut off) */
+/* The House Image */
 .scene img{
   width:100%;
   height:100%;
@@ -105,14 +107,13 @@ body{
 .batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* Graphs Section - Height Increased */
+/* Graphs Section - Adjusted Height to allow pull up */
 .graphs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  height: 180px; /* Increased from 110px to 180px */
+  height: 160px; /* Reduced slightly from 180px */
   flex-shrink: 0;
-  margin-top: 8px;
 }
 .graph-card{
   background: var(--card-bg);
