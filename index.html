@@ -83,7 +83,28 @@ body{
 .pv-power { top: 16%; left: 25%; }
 .pv-volt { top: 16%; right: 25%; }
 
-.ac-read { top: 35%; right: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
+/* Weather Card (Proj PV & Cloud Cover) */
+.weather-data { 
+  top: 28%; 
+  right: 5%; 
+  border-color: var(--gold); 
+  box-shadow: 0 0 15px #ffc24730; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px;
+}
+.weather-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+.weather-row .weather-label { color: #ffda83; font-size: 8px; letter-spacing: .5px; }
+.weather-row .weather-value { color: #fff; font-size: 14px; }
+.weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
+
+.ac-read { top: 42%; right: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
 .ac-read .label { color: #ffca9b; }
 
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
@@ -95,7 +116,6 @@ body{
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
-/* New AC Grid Voltage Card */
 .grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .grid-volt .label { color: #ffda83; }
 
@@ -105,67 +125,39 @@ body{
 .batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* Presence Card - Wider and Fixed Height */
 .presence { 
-  bottom: 1%; 
-  left: 7%; 
-  width: 28%; 
-  height: 65px; 
-  border-color: #a6d6f2; 
-  box-shadow: 0 0 15px #a6d6f230; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  bottom: 1%; left: 7%; width: 28%; height: 65px; 
+  border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
+  display: flex; flex-direction: column; justify-content: center;
 }
 .presence-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  font-weight: 800;
-  margin-bottom: 2px;
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 800; margin-bottom: 2px;
 }
 .presence-row .name { color: #d1d5db; }
 .presence-row .status { color: #6b7280; }
 .presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
-/* Device Status Card - Wider and Fixed Height */
 .device-status { 
-  bottom: 1%; 
-  left: 52%; 
-  transform: translateX(-50%); 
-  width: 32%; 
-  height: 65px; 
-  border-color: #a6d6f2; 
-  box-shadow: 0 0 15px #a6d6f230; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  bottom: 1%; left: 52%; transform: translateX(-50%); width: 32%; height: 65px; 
+  border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
+  display: flex; flex-direction: column; justify-content: center;
 }
 .device-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  font-weight: 800;
-  margin-bottom: 2px;
+  display: flex; justify-content: space-between;
+  font-size: 9px; font-weight: 800; margin-bottom: 2px;
 }
 .device-row .name { color: #d1d5db; margin-right: 8px;}
 .device-row .status { color: #ef4444; }
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
 .graphs-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  height: 160px; 
-  flex-shrink: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  height: 160px; flex-shrink: 0;
 }
 .graph-card{
-  background: var(--card-bg);
-  border:1px solid #15416a;
-  border-radius:10px;
-  padding:8px;
-  display: flex;
-  flex-direction: column;
+  background: var(--card-bg); border:1px solid #15416a;
+  border-radius:10px; padding:8px; display: flex; flex-direction: column;
 }
 .graph-head{display:flex;justify-content:space-between;margin-bottom:4px}
 .graph-title{font-size:9px;font-weight:800;color:#b6d9f6}
@@ -198,6 +190,20 @@ body{
     <span class="unit">V</span>
   </div>
 
+  <!-- Weather Card -->
+  <div class="readout weather-data">
+    <div class="weather-row">
+      <span class="weather-label">PROJ PV</span>
+      <span class="weather-value" id="expectedPv">—</span>
+      <span class="weather-unit">W</span>
+    </div>
+    <div class="weather-row">
+      <span class="weather-label">CLOUD</span>
+      <span class="weather-value" id="cloudCover">—</span>
+      <span class="weather-unit">%</span>
+    </div>
+  </div>
+
   <div class="readout ac-read" id="acCard">
     <span class="label">WINDOW AC</span>
     <span class="value" id="acValue">OFF</span>
@@ -221,7 +227,6 @@ body{
     <span class="unit">W</span>
   </div>
 
-  <!-- New AC Grid Voltage Card -->
   <div class="readout grid-volt">
     <span class="label">GRID VOLTAGE</span>
     <span class="value" id="gridvoltage">—</span>
@@ -255,7 +260,6 @@ body{
     </div>
   </div>
 
-  <!-- New Device Status Card -->
   <div class="readout device-status">
     <div class="device-row">
       <span class="name">ESP129</span>
@@ -387,15 +391,31 @@ async function fetchData() {
 
     const pvPower = num(data.pv_power);
     const invPower = num(data.inverter_power);
+    const irr = num(data.irradiance);
+    const cloud = num(data.cloud_cover);
 
     show('pvpower', pvPower, 0);
     show('pvvoltage', num(data.pv_voltage), 1);
     show('invpower', invPower, 0);
     show('totalgrid', num(data.total_grid), 0);
     show('floorgrid', num(data.floor_grid), 0);
-    show('gridvoltage', num(data.grid_voltage), 1); // Added Grid Voltage
+    show('gridvoltage', num(data.grid_voltage), 1);
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
+
+    // Update Weather Card
+    if (irr !== null) {
+      const expectedPv = (irr / 1000) * 1785;
+      document.getElementById('expectedPv').textContent = Math.round(expectedPv);
+    } else {
+      document.getElementById('expectedPv').textContent = '—';
+    }
+
+    if (cloud !== null) {
+      document.getElementById('cloudCover').textContent = cloud.toFixed(0);
+    } else {
+      document.getElementById('cloudCover').textContent = '—';
+    }
 
     setPresence('statusKiana', num(data.kiana));
     setPresence('statusKyle', num(data.kyle));
