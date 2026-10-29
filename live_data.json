@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-10-29T05:28:29.639Z",
-  "epoch_time": "1793251707",
-  "battery_voltage": "54.60",
-  "pv_power": "433.0",
-  "pv_voltage": "111.2",
-  "inverter_power": "165.0",
+  "updated_at": "2026-10-29T05:29:28.994Z",
+  "epoch_time": "1793251767",
+  "battery_voltage": "54.90",
+  "pv_power": "438.0",
+  "pv_voltage": "110.5",
+  "inverter_power": "201.0",
   "floor_grid": "0.0",
-  "total_grid": "792.2",
-  "grid_voltage": "202.8",
+  "total_grid": "796.5",
+  "grid_voltage": "203.1",
   "blackout": "0",
   "kiana": "0",
   "kyle": "0",
@@ -17,5 +17,5 @@
   "meter100_online": "YES",
   "irradiance": "749.0",
   "cloud_cover": "34",
-  "battery_soc": "69"
+  "battery_soc": "72"
 }
