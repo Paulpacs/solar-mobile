@@ -116,29 +116,22 @@ body{
 .batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:var(--batt-green); }
 .batt-volt .label { color: #caff9c; }
 
-/* Energy Button under Battery Volt */
 .btn-energy {
   position: absolute;
-  bottom: 1%; 
-  right: 5%;
-  width: 80px; 
-  padding: 6px 4px;
+  bottom: 1%; right: 5%;
+  width: 80px; padding: 6px 4px;
   background: var(--card-bg);
   border: 1px solid var(--batt-green);
   border-radius: 8px;
   color: var(--batt-green);
-  font-size: 8px;
-  font-weight: 800;
+  font-size: 8px; font-weight: 800;
   letter-spacing: 0.5px;
-  text-align: center;
-  line-height: 1.2;
+  text-align: center; line-height: 1.2;
   cursor: pointer;
   box-shadow: 0 0 10px #a6ff7020;
   z-index: 10;
 }
-.btn-energy:active {
-  background: #a6ff7030;
-}
+.btn-energy:active { background: #a6ff7030; }
 
 .presence { 
   bottom: 1%; left: 7%; width: 28%; height: 65px; 
@@ -176,7 +169,6 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
@@ -204,7 +196,6 @@ body{
 .energy-val-yest { font-size: 11px; font-weight: 700; color: #a6d6f2; display: block; margin-top: 4px; }
 .dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
 
-/* --- ENERGY FLOW LINES --- */
 .flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
 @keyframes flowDown { 0% { background-position: 0 0; } 100% { background-position: 0 9px; } }
 @keyframes flowUp { 0% { background-position: 0 0; } 100% { background-position: 0 -9px; } }
@@ -227,27 +218,35 @@ body{
 
 .flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.4s linear infinite; }
 
+/* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
 .seg2 { top: 36%; left: 51%; width: 3px; height: 20%; }
 .seg3 { top: 56%; left: 51%; width: 44%; height: 3px; }
 
+/* Main Grid Segments */
 .grid-seg1a { top: 40%; left: 5%; width: 12%; height: 3px; }
 .grid-seg1b { top: 40%; left: 17%; width: 3px; height: 6%; }
 .grid-seg1c { top: 46%; left: 12%; width: 5%; height: 3px; }
 
+/* 2nd Floor Grid Segments */
 .grid-seg2 { top: 48%; left: 25%; width: 12%; height: 3px; } 
 .grid-seg3 { top: 48%; left: 37%; width: 3px; height: 13%; }
 .grid-seg4 { top: 61%; left: 18%; width: 19%; height: 3px; }
 
-.batt-seg1 { bottom: 44%; right: 12%; width: 3px; height: 4%; }
-.batt-seg2 { bottom: 44%; right: 12%; width: 6%; height: 3px; }
-.batt-seg3 { bottom: 17%; right: 18%; width: 3px; height: 27%; }
-.batt-seg4 { bottom: 17%; right: 18%; width: 13%; height: 3px; }
+/* Battery Segments (New Path: Inverter Right -> Left -> Down -> Right -> Batt Top) */
+/* 1. Start at right of Inverter, go left */
+.batt-seg1 { bottom: 48%; right: 3%; width: 20%; height: 3px; }
+/* 2. Go down to batt volt top level */
+.batt-seg2 { bottom: 17%; right: 23%; width: 3px; height: 31%; }
+/* 3. Go right into batt volt card */
+.batt-seg3 { bottom: 17%; right: 8%; width: 15%; height: 3px; }
 
+/* AC Segments */
 .ac-seg1 { top: 64%; left: 25%; width: 30%; height: 3px; }
 .ac-seg2 { top: 40%; left: 55%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 55%; width: 38%; height: 3px; }
 
+/* Inverter to 2nd Floor Segment */
 .inv-seg1 { top: 51.5%; right: 18%; width: 54%; height: 3px; }
 
 </style>
@@ -265,16 +264,19 @@ body{
   <div class="flow-line cyan seg1 vertical" id="flow1"></div>
   <div class="flow-line cyan seg2 vertical" id="flow2"></div>
   <div class="flow-line cyan seg3 horizontal" id="flow3"></div>
+  
   <div class="flow-line red grid-seg1a horizontal" id="gridFlow1a"></div>
   <div class="flow-line red grid-seg1b vertical" id="gridFlow1b"></div>
   <div class="flow-line red grid-seg1c horizontal reverse" id="gridFlow1c"></div>
   <div class="flow-line red grid-seg2 horizontal" id="floorFlow1"></div>
   <div class="flow-line red grid-seg3 vertical" id="floorFlow2"></div>
   <div class="flow-line red grid-seg4 horizontal reverse" id="floorFlow3"></div>
-  <div class="flow-line batt-green batt-seg1 vertical" id="battFlow1"></div>
-  <div class="flow-line batt-green batt-seg2 horizontal" id="battFlow2"></div>
-  <div class="flow-line batt-green batt-seg3 vertical" id="battFlow3"></div>
-  <div class="flow-line batt-green batt-seg4 horizontal reverse" id="battFlow4"></div>
+  
+  <!-- NEW BATTERY FLOW LINES -->
+  <div class="flow-line batt-green batt-seg1 horizontal reverse" id="battFlow1"></div>
+  <div class="flow-line batt-green batt-seg2 vertical" id="battFlow2"></div>
+  <div class="flow-line batt-green batt-seg3 horizontal" id="battFlow3"></div>
+
   <div class="flow-line red ac-seg1 horizontal" id="acFlow1"></div>
   <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
@@ -338,7 +340,6 @@ body{
     <span class="unit">V</span>
   </div>
 
-  <!-- ENERGY SUMMARY BUTTON -->
   <div class="btn-energy" id="btnEnergy" onclick="openEnergyModal()">ENERGY<br>SUMMARY</div>
 
   <div class="readout presence">
@@ -378,28 +379,24 @@ body{
       <button class="modal-close" onclick="closeEnergyModal()">✕</button>
     </div>
     <div class="energy-grid">
-      <!-- PV -->
       <div class="energy-card" style="border-color: var(--cyan);">
         <span class="energy-label" style="color: var(--cyan);">PV GENERATED</span>
         <span class="dynamic-date" id="todayLabel1">—</span>
         <span class="energy-val-today" id="mTodayPv">—</span>
         <span class="energy-val-yest"><span id="yestLabel1">—</span> <span id="mYestPv">—</span></span>
       </div>
-      <!-- Inverter -->
       <div class="energy-card" style="border-color: var(--green);">
         <span class="energy-label" style="color: var(--green);">INVERTER LOAD</span>
         <span class="dynamic-date" id="todayLabel2">—</span>
         <span class="energy-val-today" id="mTodayInv">—</span>
         <span class="energy-val-yest"><span id="yestLabel2">—</span> <span id="mYestInv">—</span></span>
       </div>
-      <!-- Floor Grid -->
       <div class="energy-card" style="border-color: var(--gold);">
         <span class="energy-label" style="color: var(--gold);">2ND FLR GRID</span>
         <span class="dynamic-date" id="todayLabel3">—</span>
         <span class="energy-val-today" id="mTodayFloor">—</span>
         <span class="energy-val-yest"><span id="yestLabel3">—</span> <span id="mYestFloor">—</span></span>
       </div>
-      <!-- Total Grid -->
       <div class="energy-card" style="border-color: var(--red);">
         <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
         <span class="dynamic-date" id="todayLabel4">—</span>
@@ -421,12 +418,11 @@ const charts = [
 ];
 
 function openEnergyModal() { 
-  // Generate Dates dynamically when the modal opens
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  const options = { month: 'short', day: 'numeric' }; // e.g., "Oct 29"
+  const options = { month: 'short', day: 'numeric' };
   const todayStr = today.toLocaleDateString('en-US', options).toUpperCase() + ':';
   const yestStr = yesterday.toLocaleDateString('en-US', options).toUpperCase() + ':';
 
@@ -608,7 +604,7 @@ async function fetchData() {
     }
 
     // --- BATTERY FLOW LOGIC ---
-    const battFlows = ['battFlow1', 'battFlow2', 'battFlow3', 'battFlow4'];
+    const battFlows = ['battFlow1', 'battFlow2', 'battFlow3'];
     const battActive = (pvPower !== null && pvPower > 0) || (invPower !== null && invPower > 0);
     
     if (battActive) {
@@ -617,10 +613,14 @@ async function fetchData() {
         const el = document.getElementById(id);
         el.style.display = 'block';
         if (isCharging) {
+          // Flow: Left (from inverter), Down, Right (to battery)
           el.classList.remove('up', 'reverse');
+          if (id === 'battFlow1') el.classList.add('reverse');
         } else {
+          // Flow: Left (from battery), Up, Right (to inverter)
           el.classList.add('up');
-          if (id === 'battFlow2' || id === 'battFlow4') el.classList.add('reverse');
+          if (id === 'battFlow1') el.classList.remove('reverse');
+          if (id === 'battFlow3') el.classList.add('reverse');
         }
       });
     } else {
