@@ -234,13 +234,13 @@ body{
 .grid-seg3 { top: 48%; left: 37%; width: 3px; height: 13%; }
 .grid-seg4 { top: 61%; left: 18%; width: 19%; height: 3px; }
 
-/* Battery Segments (Start right 23%, go left 10%, down, right) */
-/* 1. Start bottom 48, right 23, go left */
-.batt-seg1 { bottom: 48%; right: 23%; width: 10%; height: 3px; }
+/* Battery Segments (Start bottom 43%, right 23%, go left 20%, down, right) */
+/* 1. Start bottom 43, right 23, go left 20% */
+.batt-seg1 { bottom: 43%; right: 23%; width: 20%; height: 3px; }
 /* 2. Go down */
-.batt-seg2 { bottom: 17%; right: 33%; width: 3px; height: 31%; }
+.batt-seg2 { bottom: 17%; right: 43%; width: 3px; height: 26%; }
 /* 3. Go right to Battery Volt */
-.batt-seg3 { bottom: 17%; right: 8%; width: 25%; height: 3px; }
+.batt-seg3 { bottom: 17%; right: 8%; width: 35%; height: 3px; }
 
 /* AC Segments */
 .ac-seg1 { top: 64%; left: 25%; width: 30%; height: 3px; }
@@ -613,11 +613,9 @@ async function fetchData() {
         const el = document.getElementById(id);
         el.style.display = 'block';
         if (isCharging) {
-          // Flow: Left, Down, Right
           el.classList.remove('up', 'reverse');
           if (id === 'battFlow1') el.classList.add('reverse');
         } else {
-          // Flow: Left, Up, Right
           el.classList.add('up');
           if (id === 'battFlow1') el.classList.remove('reverse');
           if (id === 'battFlow3') el.classList.add('reverse');
