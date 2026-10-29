@@ -153,45 +153,51 @@ body{
 /* --- ENERGY FLOW LINES --- */
 .flow-line {
   position: absolute;
-  background: rgba(48, 229, 255, 0.2); /* Faint background line */
+  background: rgba(48, 229, 255, 0.05); /* Very faint background line */
   z-index: 5;
   display: none; /* Hidden by default */
 }
 
-/* The glowing pulse that moves along the line */
-.flow-pulse {
-  position: absolute;
-  background: var(--cyan);
-  box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
-  border-radius: 4px;
-  top: 0;
-  left: 0;
+/* The repeating dashed light effect */
+.flow-line.vertical {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 10px,
+    var(--cyan) 10px,
+    var(--cyan) 25px
+  );
+  box-shadow: 0 0 8px var(--cyan);
+  animation: flowDown 0.8s linear infinite;
+}
+
+.flow-line.horizontal {
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 10px,
+    var(--cyan) 10px,
+    var(--cyan) 25px
+  );
+  box-shadow: 0 0 8px var(--cyan);
+  animation: flowRight 0.8s linear infinite;
 }
 
 /* Segment 1: PV Card down to Center */
-.seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
-.seg1 .flow-pulse { width: 3px; height: 20px; animation: flowDown 1.5s linear infinite; }
-
+.seg1 { top: 24%; left: 51%; width: 2px; height: 12%; }
 /* Segment 2: Center down to Floor between floors */
-.seg2 { top: 36%; left: 51%; width: 3px; height: 20%; }
-.seg2 .flow-pulse { width: 3px; height: 20px; animation: flowDown 1.5s linear infinite; animation-delay: 0.5s; }
-
+.seg2 { top: 36%; left: 51%; width: 2px; height: 20%; }
 /* Segment 3: Floor horizontally to Inverter card */
-.seg3 { top: 56%; left: 51%; width: 44%; height: 3px; }
-.seg3 .flow-pulse { width: 20px; height: 3px; animation: flowRight 1.5s linear infinite; animation-delay: 1s; }
+.seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
 
 @keyframes flowDown {
-  0% { top: -20px; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% { background-position: 0 0; }
+  100% { background-position: 0 25px; }
 }
 
 @keyframes flowRight {
-  0% { left: -20px; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+  0% { background-position: 0 0; }
+  100% { background-position: 25px 0; }
 }
 
 </style>
@@ -206,9 +212,9 @@ body{
   </div>
 
   <!-- FLOW LINES -->
-  <div class="flow-line seg1" id="flow1"><div class="flow-pulse"></div></div>
-  <div class="flow-line seg2" id="flow2"><div class="flow-pulse"></div></div>
-  <div class="flow-line seg3" id="flow3"><div class="flow-pulse"></div></div>
+  <div class="flow-line seg1 vertical" id="flow1"></div>
+  <div class="flow-line seg2 vertical" id="flow2"></div>
+  <div class="flow-line seg3 horizontal" id="flow3"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
