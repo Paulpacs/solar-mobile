@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-29T04:39:28.536Z",
+  "updated_at": "2026-10-29T04:40:28.850Z",
   "battery": "52.30",
-  "pvpower": "1393.0",
-  "pvvoltage": "101.3",
-  "invpower": "1609.0",
+  "pvpower": "1397.0",
+  "pvvoltage": "104.3",
+  "invpower": "1576.0",
   "floorgrid": "0.0",
   "totalgrid": "6.5",
   "irradiance": "798.0",
