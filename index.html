@@ -30,7 +30,7 @@ body{
 .scene{
   position:relative;
   width:100%;
-  flex: 1; /* Takes up remaining space above graphs */
+  flex: 1; 
   border:1px solid #145080;
   border-radius:15px;
   background:#03132a;
@@ -41,15 +41,15 @@ body{
   justify-content: flex-start;
 }
 
-/* The House Image (Natural scaling) */
+/* The House Image (Changed to 'contain' so nothing is cut off) */
 .scene img{
   width:100%;
   height:100%;
-  object-fit:cover;
-  object-position: top center; /* Align to top so panels are visible */
+  object-fit: contain; 
+  object-position: top center; 
 }
 
-/* The Title Card (Moved up to cover "PROTOTYPE") */
+/* The Title Card */
 .title-card{
   position:absolute;
   top: 0.5%;
@@ -84,7 +84,6 @@ body{
 .readout .unit{font-size:8px;color:#a6d6f2}
 
 /* Specific Readout Placements */
-/* PV side-by-side under panels */
 .pv-power { top: 22%; left: 5%; }
 .pv-volt { top: 22%; right: 5%; }
 
@@ -106,12 +105,12 @@ body{
 .batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* Graphs Section */
+/* Graphs Section - Height Increased */
 .graphs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  height: 110px; /* Adjust if you want the graphs taller */
+  height: 180px; /* Increased from 110px to 180px */
   flex-shrink: 0;
   margin-top: 8px;
 }
@@ -213,7 +212,6 @@ body{
 <script>
 const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Paulpacs/solar-mobile/main/live_data.json';
 
-// Chart Data
 const history = { pv: [], inv: [] };
 const MAX_POINTS = 36;
 const charts = [
@@ -286,11 +284,9 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Update Graphs
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
 
-    // AC Logic
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
     if (invPower !== null && invPower > 1200) {
@@ -306,11 +302,10 @@ async function fetchData() {
   }
 }
 
-// Initialization
 fetchData();
 setInterval(fetchData, 60000);
 window.addEventListener('resize', renderCharts);
-setTimeout(renderCharts, 500); // Draw empty grids on load
+setTimeout(renderCharts, 500);
 
 </script>
 </body>
