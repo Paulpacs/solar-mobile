@@ -116,6 +116,30 @@ body{
 .batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:var(--batt-green); }
 .batt-volt .label { color: #caff9c; }
 
+/* Energy Button under Battery Volt */
+.btn-energy {
+  position: absolute;
+  bottom: 1%; 
+  right: 5%;
+  width: 80px; /* Same width as battery volt card */
+  padding: 6px 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--batt-green);
+  border-radius: 8px;
+  color: var(--batt-green);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: center;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 0 10px #a6ff7020;
+  z-index: 10;
+}
+.btn-energy:active {
+  background: #a6ff7030;
+}
+
 .presence { 
   bottom: 1%; left: 7%; width: 28%; height: 65px; 
   border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
@@ -152,67 +176,77 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
-/* --- ENERGY FLOW LINES --- */
-.flow-line {
-  position: absolute;
-  z-index: 5;
-  display: none; 
-  border-radius: 3px;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
+  display: none; justify-content: center; align-items: center; z-index: 100;
 }
+.modal-overlay.active { display: flex; }
+.modal-content {
+  background: #03132a; border: 1px solid var(--batt-green);
+  border-radius: 15px; width: 90%; max-width: 400px; padding: 20px;
+  box-shadow: 0 0 30px #a6ff7030;
+}
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; border-bottom: 1px solid #15416a; padding-bottom: 10px;
+}
+.modal-title { font-size: 14px; font-weight: 850; color: var(--batt-green); letter-spacing: 1px; }
+.modal-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+.energy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.energy-card {
+  background: #04162beF; border: 1px solid #15416a;
+  border-radius: 8px; padding: 10px; text-align: center;
+}
+.energy-label { font-size: 9px; font-weight: 800; color: #8beaff; margin-bottom: 4px; display: block; }
+.energy-val-today { font-size: 16px; font-weight: 900; color: var(--green); display: block; }
+.energy-val-yest { font-size: 11px; font-weight: 700; color: #a6d6f2; display: block; margin-top: 4px; }
 
-/* Base animations */
+/* --- ENERGY FLOW LINES --- */
+.flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
 @keyframes flowDown { 0% { background-position: 0 0; } 100% { background-position: 0 9px; } }
 @keyframes flowUp { 0% { background-position: 0 0; } 100% { background-position: 0 -9px; } }
 @keyframes flowRight { 0% { background-position: 0 0; } 100% { background-position: 9px 0; } }
 @keyframes flowLeft { 0% { background-position: 0 0; } 100% { background-position: -9px 0; } }
 
-/* Cyan PV Lines */
 .flow-line.cyan.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowDown 0.4s linear infinite; }
 .flow-line.cyan.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowRight 0.4s linear infinite; }
 .flow-line.cyan.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowLeft 0.4s linear infinite; }
 
-/* Red Grid Lines */
 .flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowRight 0.4s linear infinite; }
 .flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
 .flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowLeft 0.4s linear infinite; }
 .flow-line.red.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowUp 0.4s linear infinite; }
 
-/* Battery Green Lines */
 .flow-line.batt-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowDown 0.4s linear infinite; }
 .flow-line.batt-green.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowUp 0.4s linear infinite; }
 .flow-line.batt-green.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowRight 0.4s linear infinite; }
 .flow-line.batt-green.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowLeft 0.4s linear infinite; }
 
-/* Inverter to 2nd Floor Green Lines */
 .flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.4s linear infinite; }
 
-/* PV Segments (Thickness 3px) */
 .seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
 .seg2 { top: 36%; left: 51%; width: 3px; height: 20%; }
 .seg3 { top: 56%; left: 51%; width: 44%; height: 3px; }
 
-/* Main Grid Segments */
 .grid-seg1a { top: 40%; left: 5%; width: 12%; height: 3px; }
 .grid-seg1b { top: 40%; left: 17%; width: 3px; height: 6%; }
 .grid-seg1c { top: 46%; left: 12%; width: 5%; height: 3px; }
 
-/* 2nd Floor Grid Segments */
 .grid-seg2 { top: 48%; left: 25%; width: 12%; height: 3px; } 
 .grid-seg3 { top: 48%; left: 37%; width: 3px; height: 13%; }
 .grid-seg4 { top: 61%; left: 18%; width: 19%; height: 3px; }
 
-/* Battery Segments */
 .batt-seg1 { bottom: 44%; right: 12%; width: 3px; height: 4%; }
 .batt-seg2 { bottom: 44%; right: 12%; width: 6%; height: 3px; }
 .batt-seg3 { bottom: 17%; right: 18%; width: 3px; height: 27%; }
 .batt-seg4 { bottom: 17%; right: 18%; width: 13%; height: 3px; }
 
-/* AC Segments */
 .ac-seg1 { top: 64%; left: 25%; width: 30%; height: 3px; }
 .ac-seg2 { top: 40%; left: 55%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 55%; width: 38%; height: 3px; }
 
-/* Inverter to 2nd Floor Segment */
 .inv-seg1 { top: 51.5%; right: 18%; width: 54%; height: 3px; }
 
 </style>
@@ -226,46 +260,36 @@ body{
     <div class="brand">PAULPACS · SOLAR HOME<small>SMART HOME ENERGY</small></div>
   </div>
 
-  <!-- PV FLOW LINES (CYAN) -->
+  <!-- FLOW LINES -->
   <div class="flow-line cyan seg1 vertical" id="flow1"></div>
   <div class="flow-line cyan seg2 vertical" id="flow2"></div>
   <div class="flow-line cyan seg3 horizontal" id="flow3"></div>
-
-  <!-- GRID FLOW LINES (RED) -->
   <div class="flow-line red grid-seg1a horizontal" id="gridFlow1a"></div>
   <div class="flow-line red grid-seg1b vertical" id="gridFlow1b"></div>
   <div class="flow-line red grid-seg1c horizontal reverse" id="gridFlow1c"></div>
-  
   <div class="flow-line red grid-seg2 horizontal" id="floorFlow1"></div>
   <div class="flow-line red grid-seg3 vertical" id="floorFlow2"></div>
   <div class="flow-line red grid-seg4 horizontal reverse" id="floorFlow3"></div>
-
-  <!-- BATTERY FLOW LINES (GREEN) -->
   <div class="flow-line batt-green batt-seg1 vertical" id="battFlow1"></div>
   <div class="flow-line batt-green batt-seg2 horizontal" id="battFlow2"></div>
   <div class="flow-line batt-green batt-seg3 vertical" id="battFlow3"></div>
   <div class="flow-line batt-green batt-seg4 horizontal reverse" id="battFlow4"></div>
-
-  <!-- AC FLOW LINES (RED) -->
   <div class="flow-line red ac-seg1 horizontal" id="acFlow1"></div>
   <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
-
-  <!-- INVERTER TO 2ND FLOOR LINE (GREEN) -->
   <div class="flow-line inv-green inv-seg1" id="invFlow1"></div>
 
+  <!-- CARDS -->
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
     <span class="value" id="pvpower">—</span>
     <span class="unit">W</span>
   </div>
-
   <div class="readout pv-volt">
     <span class="label">PV VOLTAGE</span>
     <span class="value" id="pvvoltage">—</span>
     <span class="unit">V</span>
   </div>
-
   <div class="readout weather-data">
     <div class="weather-row">
       <span class="weather-label">Est PV</span>
@@ -278,78 +302,54 @@ body{
       <span class="weather-unit">%</span>
     </div>
   </div>
-
   <div class="readout ac-read" id="acCard">
     <span class="label">WINDOW AC</span>
     <span class="value" id="acValue">OFF</span>
   </div>
-
   <div class="readout inv-output">
     <span class="label">INVERTER</span>
     <span class="value" id="invpower">—</span>
     <span class="unit">W</span>
   </div>
-
   <div class="readout total-grid">
     <span class="label">TOTAL GRID</span>
     <span class="value" id="totalgrid">—</span>
     <span class="unit">W</span>
   </div>
-
   <div class="readout floor-grid">
     <span class="label">2ND FLR GRID</span>
     <span class="value" id="floorgrid">—</span>
     <span class="unit">W</span>
   </div>
-
   <div class="readout grid-volt">
     <span class="label">GRID VOLTAGE</span>
     <span class="value" id="gridvoltage">—</span>
     <span class="unit">V</span>
   </div>
-
   <div class="readout batt-soc">
     <span class="label">BATTERY SOC</span>
     <span class="value" id="soc">—</span>
     <span class="unit">%</span>
   </div>
-
   <div class="readout batt-volt">
     <span class="label">BATTERY VOLT</span>
     <span class="value" id="battery">—</span>
     <span class="unit">V</span>
   </div>
 
+  <!-- ENERGY SUMMARY BUTTON -->
+  <div class="btn-energy" id="btnEnergy" onclick="openEnergyModal()">ENERGY<br>SUMMARY</div>
+
   <div class="readout presence">
-    <div class="presence-row">
-      <span class="name">Kiana</span>
-      <span class="status" id="statusKiana">—</span>
-    </div>
-    <div class="presence-row">
-      <span class="name">Kyle</span>
-      <span class="status" id="statusKyle">—</span>
-    </div>
-    <div class="presence-row">
-      <span class="name">Krizza</span>
-      <span class="status" id="statusKrizza">—</span>
-    </div>
+    <div class="presence-row"><span class="name">Kiana</span><span class="status" id="statusKiana">—</span></div>
+    <div class="presence-row"><span class="name">Kyle</span><span class="status" id="statusKyle">—</span></div>
+    <div class="presence-row"><span class="name">Krizza</span><span class="status" id="statusKrizza">—</span></div>
   </div>
-
   <div class="readout device-status">
-    <div class="device-row">
-      <span class="name">ESP129</span>
-      <span class="status" id="status129">—</span>
-    </div>
-    <div class="device-row">
-      <span class="name">ESP125</span>
-      <span class="status" id="status125">—</span>
-    </div>
-    <div class="device-row">
-      <span class="name">METER</span>
-      <span class="status" id="status100">—</span>
-    </div>
+    <div class="device-row"><span class="name">ESP129</span><span class="status" id="status129">—</span></div>
+    <div class="device-row"><span class="name">ESP125</span><span class="status" id="status125">—</span></div>
+    <div class="device-row"><span class="name">METER</span><span class="status" id="status100">—</span></div>
   </div>
-
 </div>
 
 <div class="graphs-container">
@@ -369,6 +369,38 @@ body{
   </div>
 </div>
 
+<!-- Energy Modal -->
+<div class="modal-overlay" id="energyModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">ENERGY SUMMARY</div>
+      <button class="modal-close" onclick="closeEnergyModal()">✕</button>
+    </div>
+    <div class="energy-grid">
+      <div class="energy-card" style="border-color: var(--cyan);">
+        <span class="energy-label" style="color: var(--cyan);">PV GENERATED</span>
+        <span class="energy-val-today" id="mTodayPv">—</span>
+        <span class="energy-val-yest">Yest: <span id="mYestPv">—</span></span>
+      </div>
+      <div class="energy-card" style="border-color: var(--green);">
+        <span class="energy-label" style="color: var(--green);">INVERTER LOAD</span>
+        <span class="energy-val-today" id="mTodayInv">—</span>
+        <span class="energy-val-yest">Yest: <span id="mYestInv">—</span></span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">2ND FLR GRID</span>
+        <span class="energy-val-today" id="mTodayFloor">—</span>
+        <span class="energy-val-yest">Yest: <span id="mYestFloor">—</span></span>
+      </div>
+      <div class="energy-card" style="border-color: var(--red);">
+        <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
+        <span class="energy-val-today" id="mTodayGrid">—</span>
+        <span class="energy-val-yest">Yest: <span id="mYestGrid">—</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/live_data.json';
 
@@ -378,6 +410,9 @@ const charts = [
   { key: 'pv', canvas: 'chartPv', current: 'chartPvCurrent', color: '#30e5ff', fill: 'rgba(48,229,255,.13)' },
   { key: 'inv', canvas: 'chartInv', current: 'chartInvCurrent', color: '#4cffb0', fill: 'rgba(76,255,176,.13)' }
 ];
+
+function openEnergyModal() { document.getElementById('energyModal').classList.add('active'); }
+function closeEnergyModal() { document.getElementById('energyModal').classList.remove('active'); }
 
 function num(v){ 
   if(v===null||v===undefined||v===''||String(v).toLowerCase()==='nan') return null; 
@@ -394,32 +429,18 @@ function show(id, v, dec, unit='') {
 function setPresence(id, val) {
   const el = document.getElementById(id);
   if (!el) return;
-  if (val === 1) {
-    el.textContent = 'HOME';
-    el.classList.add('home');
-  } else if (val === 0) {
-    el.textContent = 'AWAY';
-    el.classList.remove('home');
-  } else {
-    el.textContent = '—';
-    el.classList.remove('home');
-  }
+  if (val === 1) { el.textContent = 'HOME'; el.classList.add('home'); }
+  else if (val === 0) { el.textContent = 'AWAY'; el.classList.remove('home'); }
+  else { el.textContent = '—'; el.classList.remove('home'); }
 }
 
 function setDeviceStatus(id, val) {
   const el = document.getElementById(id);
   if (!el) return;
   const strVal = String(val).toUpperCase();
-  if (strVal === 'YES' || strVal === '1') {
-    el.textContent = 'ONLINE';
-    el.classList.add('online');
-  } else if (strVal === 'NO' || strVal === '0') {
-    el.textContent = 'OFFLINE';
-    el.classList.remove('online');
-  } else {
-    el.textContent = '—';
-    el.classList.remove('online');
-  }
+  if (strVal === 'YES' || strVal === '1') { el.textContent = 'ONLINE'; el.classList.add('online'); }
+  else if (strVal === 'NO' || strVal === '0') { el.textContent = 'OFFLINE'; el.classList.remove('online'); }
+  else { el.textContent = '—'; el.classList.remove('online'); }
 }
 
 function drawChart(c){
@@ -483,6 +504,16 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
+    // Update Modal Data
+    show('mTodayPv', num(data.today_pv_kwh), 2, 'kWh');
+    show('mYestPv', num(data.yesterday_pv_kwh), 2, 'kWh');
+    show('mTodayInv', num(data.today_inverter_kwh), 2, 'kWh');
+    show('mYestInv', num(data.yesterday_inverter_kwh), 2, 'kWh');
+    show('mTodayFloor', num(data.today_floor_kwh), 2, 'kWh');
+    show('mYestFloor', num(data.yesterday_floor_kwh), 2, 'kWh');
+    show('mTodayGrid', num(data.today_grid_kwh), 2, 'kWh');
+    show('mYestGrid', num(data.yesterday_grid_kwh), 2, 'kWh');
+
     if (irr !== null) {
       const expectedPv = (irr / 1000) * 1785;
       document.getElementById('expectedPv').textContent = Math.round(expectedPv);
@@ -511,9 +542,7 @@ async function fetchData() {
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
     const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
-    
     const isAcOn = (invPower !== null && invPower > 1200) || (floorGrid !== null && floorGrid > 1000);
-
     if (isAcOn) {
       acValue.textContent = 'ON';
       acCard.classList.add('ac-on');
