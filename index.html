@@ -89,7 +89,6 @@ body{
 .inv-output { bottom: 20%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-/* Moved Total Grid up slightly to make room */
 .total-grid { top: 38%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
 
@@ -102,12 +101,19 @@ body{
 .batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* New Presence Card */
-.presence { bottom: 8%; left: 5%; border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; }
-.presence .label { color: #cce6ff; }
-.presence .value { color: #ffffff; }
-.presence.home { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
-.presence.home .value { color: var(--green); }
+/* New 3-Row Presence Card */
+.presence { bottom: 8%; left: 5%; border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; padding-bottom: 8px; }
+.presence .label { color: #cce6ff; margin-bottom: 4px; display: block; }
+.presence-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.presence-row .name { color: #d1d5db; }
+.presence-row .status { color: #6b7280; } /* Default away color */
+.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
 .graphs-container {
   display: grid;
@@ -190,10 +196,21 @@ body{
     <span class="unit">V</span>
   </div>
 
-  <!-- New Presence Card -->
-  <div class="readout presence" id="presenceCard">
+  <!-- Updated Presence Card -->
+  <div class="readout presence">
     <span class="label">FAMILY STATUS</span>
-    <span class="value" id="presenceValue">—</span>
+    <div class="presence-row">
+      <span class="name">Kiana</span>
+      <span class="status" id="statusKiana">—</span>
+    </div>
+    <div class="presence-row">
+      <span class="name">Kyle</span>
+      <span class="status" id="statusKyle">—</span>
+    </div>
+    <div class="presence-row">
+      <span class="name">Krizza</span>
+      <span class="status" id="statusKrizza">—</span>
+    </div>
   </div>
 
 </div>
@@ -235,6 +252,21 @@ function show(id, v, dec, unit='') {
   const el = document.getElementById(id);
   if (!el) return;
   el.textContent = v === null ? '—' : v.toFixed(dec) + (unit ? ' '+unit : '');
+}
+
+function setPresence(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (val === 1) {
+    el.textContent = 'HOME';
+    el.classList.add('home');
+  } else if (val === 0) {
+    el.textContent = 'AWAY';
+    el.classList.remove('home');
+  } else {
+    el.textContent = '—';
+    el.classList.remove('home');
+  }
 }
 
 function drawChart(c){
@@ -290,23 +322,10 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Presence Logic
-    const kiana = num(data.kiana);
-    const kyle = num(data.kyle);
-    const krizza = num(data.krizza);
-    const presenceCard = document.getElementById('presenceCard');
-    const presenceValue = document.getElementById('presenceValue');
-    
-    if (kiana === 1 || kyle === 1 || krizza === 1) {
-      presenceValue.textContent = 'HOME';
-      presenceCard.classList.add('home');
-    } else if (kiana === 0 && kyle === 0 && krizza === 0) {
-      presenceValue.textContent = 'AWAY';
-      presenceCard.classList.remove('home');
-    } else {
-      presenceValue.textContent = '—';
-      presenceCard.classList.remove('home');
-    }
+    // Update the 3 Presence Rows
+    setPresence('statusKiana', num(data.kiana));
+    setPresence('statusKyle', num(data.kyle));
+    setPresence('statusKrizza', num(data.krizza));
 
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
