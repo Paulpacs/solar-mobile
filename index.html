@@ -121,7 +121,7 @@ body{
   position: absolute;
   bottom: 1%; 
   right: 5%;
-  width: 80px; /* Same width as battery volt card */
+  width: 80px; 
   padding: 6px 4px;
   background: var(--card-bg);
   border: 1px solid var(--batt-green);
@@ -202,6 +202,7 @@ body{
 .energy-label { font-size: 9px; font-weight: 800; color: #8beaff; margin-bottom: 4px; display: block; }
 .energy-val-today { font-size: 16px; font-weight: 900; color: var(--green); display: block; }
 .energy-val-yest { font-size: 11px; font-weight: 700; color: #a6d6f2; display: block; margin-top: 4px; }
+.dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
 
 /* --- ENERGY FLOW LINES --- */
 .flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
@@ -377,25 +378,33 @@ body{
       <button class="modal-close" onclick="closeEnergyModal()">✕</button>
     </div>
     <div class="energy-grid">
+      <!-- PV -->
       <div class="energy-card" style="border-color: var(--cyan);">
         <span class="energy-label" style="color: var(--cyan);">PV GENERATED</span>
+        <span class="dynamic-date" id="todayLabel1">—</span>
         <span class="energy-val-today" id="mTodayPv">—</span>
-        <span class="energy-val-yest">Yest: <span id="mYestPv">—</span></span>
+        <span class="energy-val-yest"><span id="yestLabel1">—</span> <span id="mYestPv">—</span></span>
       </div>
+      <!-- Inverter -->
       <div class="energy-card" style="border-color: var(--green);">
         <span class="energy-label" style="color: var(--green);">INVERTER LOAD</span>
+        <span class="dynamic-date" id="todayLabel2">—</span>
         <span class="energy-val-today" id="mTodayInv">—</span>
-        <span class="energy-val-yest">Yest: <span id="mYestInv">—</span></span>
+        <span class="energy-val-yest"><span id="yestLabel2">—</span> <span id="mYestInv">—</span></span>
       </div>
+      <!-- Floor Grid -->
       <div class="energy-card" style="border-color: var(--gold);">
         <span class="energy-label" style="color: var(--gold);">2ND FLR GRID</span>
+        <span class="dynamic-date" id="todayLabel3">—</span>
         <span class="energy-val-today" id="mTodayFloor">—</span>
-        <span class="energy-val-yest">Yest: <span id="mYestFloor">—</span></span>
+        <span class="energy-val-yest"><span id="yestLabel3">—</span> <span id="mYestFloor">—</span></span>
       </div>
+      <!-- Total Grid -->
       <div class="energy-card" style="border-color: var(--red);">
         <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
+        <span class="dynamic-date" id="todayLabel4">—</span>
         <span class="energy-val-today" id="mTodayGrid">—</span>
-        <span class="energy-val-yest">Yest: <span id="mYestGrid">—</span></span>
+        <span class="energy-val-yest"><span id="yestLabel4">—</span> <span id="mYestGrid">—</span></span>
       </div>
     </div>
   </div>
@@ -411,7 +420,28 @@ const charts = [
   { key: 'inv', canvas: 'chartInv', current: 'chartInvCurrent', color: '#4cffb0', fill: 'rgba(76,255,176,.13)' }
 ];
 
-function openEnergyModal() { document.getElementById('energyModal').classList.add('active'); }
+function openEnergyModal() { 
+  // Generate Dates dynamically when the modal opens
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const options = { month: 'short', day: 'numeric' }; // e.g., "Oct 29"
+  const todayStr = today.toLocaleDateString('en-US', options).toUpperCase() + ':';
+  const yestStr = yesterday.toLocaleDateString('en-US', options).toUpperCase() + ':';
+
+  document.getElementById('todayLabel1').textContent = todayStr;
+  document.getElementById('todayLabel2').textContent = todayStr;
+  document.getElementById('todayLabel3').textContent = todayStr;
+  document.getElementById('todayLabel4').textContent = todayStr;
+  
+  document.getElementById('yestLabel1').textContent = yestStr;
+  document.getElementById('yestLabel2').textContent = yestStr;
+  document.getElementById('yestLabel3').textContent = yestStr;
+  document.getElementById('yestLabel4').textContent = yestStr;
+
+  document.getElementById('energyModal').classList.add('active'); 
+}
 function closeEnergyModal() { document.getElementById('energyModal').classList.remove('active'); }
 
 function num(v){ 
