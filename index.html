@@ -26,11 +26,10 @@ body{
   overflow:hidden;
 }
 
-/* Main Container - Changed flex to height */
 .scene{
   position:relative;
   width:100%;
-  height: 65vh; /* Reduced height to pull graphs up */
+  height: 65vh; 
   border:1px solid #145080;
   border-radius:15px;
   background:#03132a;
@@ -42,7 +41,6 @@ body{
   margin-bottom: 8px; 
 }
 
-/* The House Image */
 .scene img{
   width:100%;
   height:100%;
@@ -50,7 +48,6 @@ body{
   object-position: top center; 
 }
 
-/* The Title Card */
 .title-card{
   position:absolute;
   top: 0.5%;
@@ -68,7 +65,6 @@ body{
 .title-card .brand{font-size: 12px; color:#eaf7ff; font-weight:850; letter-spacing:1px;}
 .title-card .brand small{display:block; font-size: 8px; color:var(--cyan); letter-spacing:2px; font-weight:700;}
 
-/* Floating Readouts */
 .readout{
   position:absolute;
   padding:6px 10px;
@@ -84,7 +80,6 @@ body{
 .readout .value{display:block;font-size:16px;font-weight:900;line-height:1.1}
 .readout .unit{font-size:8px;color:#a6d6f2}
 
-/* Specific Readout Placements */
 .pv-power { top: 14%; left: 10%; }
 .pv-volt { top: 14%; right: 10%; }
 
@@ -94,10 +89,11 @@ body{
 .inv-output { bottom: 20%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-.total-grid { top: 45%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
+/* Moved Total Grid up slightly to make room */
+.total-grid { top: 38%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
 
-.floor-grid { top: 58%; left: 5%; min-width: 80px; border-color: var(--gold); }
+.floor-grid { top: 51%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
 .batt-soc { bottom: 35%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
@@ -106,7 +102,13 @@ body{
 .batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* Graphs Section */
+/* New Presence Card */
+.presence { bottom: 8%; left: 5%; border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; }
+.presence .label { color: #cce6ff; }
+.presence .value { color: #ffffff; }
+.presence.home { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
+.presence.home .value { color: var(--green); }
+
 .graphs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -137,12 +139,10 @@ body{
 <div class="scene">
   <img src="house.jpg" alt="Solar Home">
 
-  <!-- Title Card -->
   <div class="title-card">
     <div class="brand">PAULPACS · SOLAR HOME<small>SMART HOME ENERGY FLOW</small></div>
   </div>
 
-  <!-- Floating Readouts -->
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
     <span class="value" id="pvpower">—</span>
@@ -189,9 +189,15 @@ body{
     <span class="value" id="battery">—</span>
     <span class="unit">V</span>
   </div>
+
+  <!-- New Presence Card -->
+  <div class="readout presence" id="presenceCard">
+    <span class="label">FAMILY STATUS</span>
+    <span class="value" id="presenceValue">—</span>
+  </div>
+
 </div>
 
-<!-- Live Graphs Section -->
 <div class="graphs-container">
   <div class="graph-card graph-pv">
     <div class="graph-head">
@@ -283,6 +289,24 @@ async function fetchData() {
     show('floorgrid', num(data.floor_grid), 0);
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
+
+    // Presence Logic
+    const kiana = num(data.kiana);
+    const kyle = num(data.kyle);
+    const krizza = num(data.krizza);
+    const presenceCard = document.getElementById('presenceCard');
+    const presenceValue = document.getElementById('presenceValue');
+    
+    if (kiana === 1 || kyle === 1 || krizza === 1) {
+      presenceValue.textContent = 'HOME';
+      presenceCard.classList.add('home');
+    } else if (kiana === 0 && kyle === 0 && krizza === 0) {
+      presenceValue.textContent = 'AWAY';
+      presenceCard.classList.remove('home');
+    } else {
+      presenceValue.textContent = '—';
+      presenceCard.classList.remove('home');
+    }
 
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
