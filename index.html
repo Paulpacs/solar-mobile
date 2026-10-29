@@ -503,6 +503,7 @@ async function fetchData() {
     const acValue = document.getElementById('acValue');
     const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
     
+    // AC is ON if Inverter > 1200 OR 2nd Floor Grid > 1000
     const isAcOn = (invPower !== null && invPower > 1200) || (floorGrid !== null && floorGrid > 1000);
 
     if (isAcOn) {
