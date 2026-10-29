@@ -11,21 +11,22 @@
   --green:#4cffb0;
   --gold:#ffc247;
   --text:#f4fbff;
-  --bg:#020916;
-  --card:#061a30eF;
+  --card-bg: #03172beF;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  padding:12px;
+  padding:10px;
   background:radial-gradient(ellipse at 50% 0%,#082956,#020916 60%);
   color:var(--text);
   font:14px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;
-  min-height:100vh;
+  height:100vh;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  overflow:hidden;
 }
+
+/* Header */
 header{
   display:flex;
   justify-content:space-between;
@@ -34,67 +35,138 @@ header{
   border:1px solid #124b7b;
   border-radius:12px;
   background:#04162beF;
+  flex-shrink:0;
+  margin-bottom:8px;
+  z-index:10;
 }
 .brand{font-weight:850;letter-spacing:1px;color:#eaf7ff}
 .brand small{display:block;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700}
 .live{font-size:10px;color:var(--green);border:1px solid #1c775b;border-radius:99px;padding:4px 8px}
-.live:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;box-shadow:0 0 8px var(--green);animation:blink 1.4s infinite}
 
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+/* The Image Container */
+.scene{
+  position:relative;
+  width:100%;
+  flex:1;
+  border:1px solid #145080;
+  border-radius:15px;
+  background:#03132a;
+  overflow:hidden;
+  box-shadow:0 8px 25px #0008;
 }
 
-.card{
-  border:1px solid #15416a;
-  border-radius:12px;
-  background:var(--card);
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
+/* The House Image */
+.scene img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  /* Scale the image slightly to push the bottom text out of view */
+  transform: scale(1.15) translateY(-2%); 
+  transform-origin: center top;
 }
-.card.full{grid-column: span 2;}
 
-.label{
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:.6px;
-  color:#8beaff;
-  margin-bottom:4px;
+/* The Title Card (Covers the top text) */
+.title-card{
+  position:absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  background: rgba(2, 9, 22, 0.9);
+  border: 1px solid #124b7b;
+  border-radius: 8px;
+  padding: 6px;
+  text-align: center;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
-.value{
-  font-size:24px;
-  font-weight:900;
-  font-variant-numeric:tabular-nums;
-  line-height:1.1;
+.title-card .brand{font-size: 12px;}
+.title-card .brand small{font-size: 8px;}
+
+/* Floating Readouts */
+.readout{
+  position:absolute;
+  padding:6px 10px;
+  border:1px solid var(--cyan);
+  border-radius:8px;
+  background:linear-gradient(135deg,#03172beF,#041e38eF);
+  box-shadow:0 0 15px #00cfff38;
+  backdrop-filter:blur(4px);
+  z-index:10;
 }
-.unit{font-size:10px;color:#a6d6f2;margin-top:2px}
+.readout .label{display:block;font-size:8px;font-weight:800;letter-spacing:.5px;color:#8beaff}
+.readout .value{display:block;font-size:16px;font-weight:900;line-height:1.1}
+.readout .unit{font-size:8px;color:#a6d6f2}
 
-/* Colors for specific cards */
-.card.solar{border-color:var(--gold);box-shadow:0 0 15px #ffc24720}
-.card.solar .label{color:#ffda83}
-.card.solar .value{color:var(--gold)}
+/* Specific Readout Placements */
+.pv-power { top: 18%; left: 5%; }
+.pv-volt { top: 26%; left: 5%; min-width: 80px; }
+.inv-output { top: 35%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
+.inv-output .label { color: #7dffca; }
+.ac-read { top: 45%; left: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
+.ac-read .label { color: #ffca9b; }
+.total-grid { bottom: 25%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
+.total-grid .label { color: #ffda83; }
+.floor-grid { bottom: 18%; left: 5%; min-width: 80px; border-color: var(--gold); }
+.floor-grid .label { color: #ffda83; }
 
-.card.inverter{border-color:var(--green);box-shadow:0 0 15px #4cffb020}
-.card.inverter .label{color:#7dffca}
-.card.inverter .value{color:var(--green)}
+/* Fake Battery and Inverter Graphics */
+.fake-inverter {
+  position: absolute;
+  bottom: 22%;
+  right: 5%;
+  width: 60px;
+  height: 45px;
+  background: #0a253e;
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  box-shadow: 0 0 15px var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 15;
+}
+.fake-inverter::after {
+  content: "";
+  width: 30px;
+  height: 4px;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
 
-.card.battery{border-color:#a6ff70;box-shadow:0 0 15px #a6ff7020}
-.card.battery .label{color:#caff9c}
-.card.battery .value{color:#a6ff70}
+.fake-battery {
+  position: absolute;
+  bottom: 10%;
+  right: 5%;
+  width: 70px;
+  height: 80px;
+  background: #0a253e;
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  box-shadow: 0 0 20px var(--green);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px;
+  z-index: 15;
+  overflow: hidden;
+}
+.fake-battery .fill {
+  width: 100%;
+  height: 50%; /* Will be updated by JS */
+  background: var(--green);
+  border-radius: 4px;
+  box-shadow: 0 0 10px var(--green);
+  transition: height 0.5s ease;
+}
 
-.card.gridcard{border-color:var(--cyan);box-shadow:0 0 15px #00cfff20}
-.card.gridcard .label{color:#8beaff}
-.card.gridcard .value{color:var(--cyan)}
+/* Battery Telemetry positioned next to the graphic */
+.batt-soc { bottom: 12%; right: 35%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
+.batt-soc .label { color: #caff9c; }
+.batt-volt { bottom: 5%; right: 35%; min-width: 80px; border-color:#a6ff70; }
+.batt-volt .label { color: #caff9c; }
 
-/* AC Indicator */
-.ac-on{border-color:#ff9b54;box-shadow:0 0 15px #ff9b5460}
-.ac-on .label{color:#ffca9b}
-.ac-on .value{color:#ff9b54}
-
-@keyframes blink{50%{opacity:.35}}
 </style>
 </head>
 <body>
@@ -104,74 +176,71 @@ header{
   <div class="live">LIVE</div>
 </header>
 
-<div class="grid">
-  <!-- Top Row -->
-  <div class="card solar">
+<div class="scene">
+  <img src="house.jpg" alt="Solar Home">
+
+  <!-- Title Card -->
+  <div class="title-card">
+    <div class="brand">PAULPACS · SOLAR HOME<small>SMART HOME ENERGY FLOW</small></div>
+  </div>
+
+  <!-- Floating Readouts -->
+  <div class="readout pv-power">
     <span class="label">PV POWER</span>
     <span class="value" id="pvpower">—</span>
-    <span class="unit">Watts</span>
+    <span class="unit">W</span>
   </div>
-  
-  <div class="card solar">
+
+  <div class="readout pv-volt">
     <span class="label">PV VOLTAGE</span>
     <span class="value" id="pvvoltage">—</span>
-    <span class="unit">Volts</span>
+    <span class="unit">V</span>
   </div>
 
-  <!-- Inverter & AC -->
-  <div class="card inverter">
-    <span class="label">INVERTER OUTPUT</span>
+  <div class="readout inv-output">
+    <span class="label">INVERTER</span>
     <span class="value" id="invpower">—</span>
-    <span class="unit">Watts</span>
+    <span class="unit">W</span>
   </div>
 
-  <div class="card" id="acCard">
+  <div class="readout ac-read" id="acCard">
     <span class="label">WINDOW AC</span>
     <span class="value" id="acValue">OFF</span>
-    <span class="unit">&gt; 1200W rule</span>
   </div>
 
-  <!-- Battery -->
-  <div class="card battery">
+  <div class="readout total-grid">
+    <span class="label">TOTAL GRID</span>
+    <span class="value" id="totalgrid">—</span>
+    <span class="unit">W</span>
+  </div>
+
+  <div class="readout floor-grid">
+    <span class="label">FLOOR GRID</span>
+    <span class="value" id="floorgrid">—</span>
+    <span class="unit">W</span>
+  </div>
+
+  <!-- Fake Battery & Inverter Graphics -->
+  <div class="fake-inverter"></div>
+  <div class="fake-battery">
+    <div class="fill" id="batteryFill"></div>
+  </div>
+
+  <div class="readout batt-soc">
     <span class="label">BATTERY SOC</span>
     <span class="value" id="soc">—</span>
-    <span class="unit">% Charge</span>
+    <span class="unit">%</span>
   </div>
 
-  <div class="card battery">
-    <span class="label">BATTERY VOLTAGE</span>
+  <div class="readout batt-volt">
+    <span class="label">BATTERY VOLT</span>
     <span class="value" id="battery">—</span>
-    <span class="unit">Volts</span>
+    <span class="unit">V</span>
   </div>
 
-  <!-- Grid (Full Width) -->
-  <div class="card gridcard full">
-    <span class="label">TOTAL GRID POWER</span>
-    <span class="value" id="totalgrid">—</span>
-    <span class="unit">Watts (Whole House)</span>
-  </div>
-
-  <div class="card gridcard">
-    <span class="label">2ND FLOOR GRID</span>
-    <span class="value" id="floorgrid">—</span>
-    <span class="unit">Watts</span>
-  </div>
-
-  <div class="card gridcard">
-    <span class="label">GRID VOLTAGE</span>
-    <span class="value" id="gridv">—</span>
-    <span class="unit">Volts</span>
-  </div>
-
-  <!-- Environment (Full Width) -->
-  <div class="card solar full">
-    <span class="label">IRRADIANCE / CLOUDS</span>
-    <span class="value"><span id="irr">—</span> <span style="font-size:12px;color:#a6d6f2;">W/m²</span> / <span id="cloud">—</span> <span style="font-size:12px;color:#a6d6f2;">%</span></span>
-  </div>
 </div>
 
 <script>
-// The URL to your GitHub JSON file
 const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Paulpacs/solar-mobile/main/live_data.json';
 
 function num(v){ 
@@ -188,26 +257,27 @@ function show(id, v, dec, unit='') {
 
 async function fetchData() {
   try {
-    // We add ?t=timestamp to force the browser to bypass GitHub's CDN cache
     const res = await fetch(GITHUB_JSON_URL + '?t=' + new Date().getTime());
     const data = await res.json();
     
-    // If the file is empty (just "{}"), do nothing yet
     if (!data.updated_at) return;
 
-    // Update text values
     show('pvpower', num(data.pv_power), 0);
     show('pvvoltage', num(data.pv_voltage), 1);
     show('invpower', num(data.inverter_power), 0);
-    show('battery', num(data.battery_voltage), 2);
-    show('soc', num(data.battery_soc), 0);
     show('totalgrid', num(data.total_grid), 0);
     show('floorgrid', num(data.floor_grid), 0);
-    show('gridv', num(data.grid_voltage), 1);
-    show('irr', num(data.irradiance), 0);
-    show('cloud', num(data.cloud_cover), 0);
+    
+    const socVal = num(data.battery_soc);
+    show('soc', socVal, 0);
+    show('battery', num(data.battery_voltage), 2);
 
-    // Logic for AC ON/OFF
+    // Update the fake battery fill height
+    if (socVal !== null) {
+      document.getElementById('batteryFill').style.height = socVal + '%';
+    }
+
+    // AC Logic
     const invPower = num(data.inverter_power);
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
@@ -225,7 +295,6 @@ async function fetchData() {
   }
 }
 
-// Run immediately, then every 60 seconds
 fetchData();
 setInterval(fetchData, 60000);
 </script>
