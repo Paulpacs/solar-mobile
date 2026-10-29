@@ -101,9 +101,8 @@ body{
 .batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* New 3-Row Presence Card */
+/* 3-Row Presence Card */
 .presence { bottom: 10%; left: 5%; border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; padding-bottom: 8px; }
-.presence .label { color: #cce6ff; margin-bottom: 4px; display: block; }
 .presence-row {
   display: flex;
   justify-content: space-between;
@@ -112,8 +111,28 @@ body{
   margin-bottom: 2px;
 }
 .presence-row .name { color: #d1d5db; }
-.presence-row .status { color: #6b7280; } /* Default away color */
+.presence-row .status { color: #6b7280; }
 .presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
+
+/* Device Status Card - Centered between Presence and Battery Volt */
+.device-status { 
+  bottom: 10%; 
+  left: 50%; 
+  transform: translateX(-50%); /* Perfectly centers it */
+  min-width: 85px; 
+  border-color: #a6d6f2; 
+  box-shadow: 0 0 15px #a6d6f230; 
+}
+.device-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.device-row .name { color: #d1d5db; margin-right: 8px;}
+.device-row .status { color: #ef4444; } /* Red for offline */
+.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); } /* Green for online */
 
 .graphs-container {
   display: grid;
@@ -196,7 +215,6 @@ body{
     <span class="unit">V</span>
   </div>
 
-  <!-- Updated Presence Card -->
   <div class="readout presence">
     <div class="presence-row">
       <span class="name">Kiana</span>
@@ -209,6 +227,22 @@ body{
     <div class="presence-row">
       <span class="name">Krizza</span>
       <span class="status" id="statusKrizza">—</span>
+    </div>
+  </div>
+
+  <!-- New Device Status Card -->
+  <div class="readout device-status">
+    <div class="device-row">
+      <span class="name">ESP129</span>
+      <span class="status" id="status129">—</span>
+    </div>
+    <div class="device-row">
+      <span class="name">ESP125</span>
+      <span class="status" id="status125">—</span>
+    </div>
+    <div class="device-row">
+      <span class="name">METER</span>
+      <span class="status" id="status100">—</span>
     </div>
   </div>
 
@@ -268,6 +302,22 @@ function setPresence(id, val) {
   }
 }
 
+function setDeviceStatus(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const strVal = String(val).toUpperCase();
+  if (strVal === 'YES' || strVal === '1') {
+    el.textContent = 'ONLINE';
+    el.classList.add('online');
+  } else if (strVal === 'NO' || strVal === '0') {
+    el.textContent = 'OFFLINE';
+    el.classList.remove('online');
+  } else {
+    el.textContent = '—';
+    el.classList.remove('online');
+  }
+}
+
 function drawChart(c){
  const canvas=document.getElementById(c.canvas);if(!canvas)return;
  const rect=canvas.getBoundingClientRect();if(!rect.width)return;
@@ -321,10 +371,13 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Update the 3 Presence Rows
     setPresence('statusKiana', num(data.kiana));
     setPresence('statusKyle', num(data.kyle));
     setPresence('statusKrizza', num(data.krizza));
+
+    setDeviceStatus('status129', data.esp129_online);
+    setDeviceStatus('status125', data.esp124_online); 
+    setDeviceStatus('status100', data.meter100_online);
 
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
