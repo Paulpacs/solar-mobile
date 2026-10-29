@@ -157,7 +157,7 @@ body{
   position: absolute;
   z-index: 5;
   display: none; 
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* Base animations */
@@ -183,31 +183,37 @@ body{
 .flow-line.batt-green.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px); box-shadow: 0 0 8px var(--batt-green); animation: flowRight 0.5s linear infinite; }
 .flow-line.batt-green.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px); box-shadow: 0 0 8px var(--batt-green); animation: flowLeft 0.5s linear infinite; }
 
-/* PV Segments */
-.seg1 { top: 24%; left: 51%; width: 2px; height: 12%; }
-.seg2 { top: 36%; left: 51%; width: 2px; height: 20%; }
-.seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
+/* Inverter to 2nd Floor Green Lines */
+.flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 5px, var(--green) 5px, var(--green) 13px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.5s linear infinite; }
+
+/* PV Segments (Thickness increased to 4px, lengths adjusted) */
+.seg1 { top: 24%; left: 51%; width: 4px; height: 12%; }
+.seg2 { top: 36%; left: 51%; width: 4px; height: 20%; }
+.seg3 { top: 56%; left: 51%; width: 44%; height: 4px; }
 
 /* Main Grid Segments */
-.grid-seg1a { top: 40%; left: 5%; width: 12%; height: 2px; }
-.grid-seg1b { top: 40%; left: 17%; width: 2px; height: 6%; }
-.grid-seg1c { top: 46%; left: 12%; width: 5%; height: 2px; }
+.grid-seg1a { top: 40%; left: 5%; width: 12%; height: 4px; }
+.grid-seg1b { top: 40%; left: 17%; width: 4px; height: 6%; }
+.grid-seg1c { top: 46%; left: 12%; width: 5%; height: 4px; }
 
 /* 2nd Floor Grid Segments */
-.grid-seg2 { top: 48%; left: 25%; width: 12%; height: 2px; } 
-.grid-seg3 { top: 48%; left: 37%; width: 2px; height: 13%; }
-.grid-seg4 { top: 61%; left: 18%; width: 19%; height: 2px; }
+.grid-seg2 { top: 48%; left: 25%; width: 12%; height: 4px; } 
+.grid-seg3 { top: 48%; left: 37%; width: 4px; height: 13%; }
+.grid-seg4 { top: 61%; left: 18%; width: 19%; height: 4px; }
 
 /* Battery Segments */
-.batt-seg1 { bottom: 44%; right: 12%; width: 2px; height: 4%; }
-.batt-seg2 { bottom: 44%; right: 12%; width: 6%; height: 2px; }
-.batt-seg3 { bottom: 17%; right: 18%; width: 2px; height: 27%; }
-.batt-seg4 { bottom: 17%; right: 18%; width: 13%; height: 2px; }
+.batt-seg1 { bottom: 44%; right: 12%; width: 4px; height: 4%; }
+.batt-seg2 { bottom: 44%; right: 12%; width: 6%; height: 4px; }
+.batt-seg3 { bottom: 17%; right: 18%; width: 4px; height: 27%; }
+.batt-seg4 { bottom: 17%; right: 18%; width: 13%; height: 4px; }
 
-/* AC Segments (Matches Red Grid Color) */
-.ac-seg1 { top: 64%; left: 25%; width: 30%; height: 2px; }
-.ac-seg2 { top: 40%; left: 55%; width: 2px; height: 24%; }
-.ac-seg3 { top: 40%; left: 55%; width: 38%; height: 2px; }
+/* AC Segments */
+.ac-seg1 { top: 64%; left: 25%; width: 30%; height: 4px; }
+.ac-seg2 { top: 40%; left: 55%; width: 4px; height: 24%; }
+.ac-seg3 { top: 40%; left: 55%; width: 38%; height: 4px; }
+
+/* Inverter to 2nd Floor Segment */
+.inv-seg1 { top: 51.5%; right: 18%; width: 54%; height: 4px; }
 
 </style>
 </head>
@@ -244,6 +250,9 @@ body{
   <div class="flow-line red ac-seg1 horizontal" id="acFlow1"></div>
   <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
+
+  <!-- INVERTER TO 2ND FLOOR LINE (GREEN) -->
+  <div class="flow-line inv-green inv-seg1" id="invFlow1"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -503,7 +512,6 @@ async function fetchData() {
     const acValue = document.getElementById('acValue');
     const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
     
-    // AC is ON if Inverter > 1200 OR 2nd Floor Grid > 1000
     const isAcOn = (invPower !== null && invPower > 1200) || (floorGrid !== null && floorGrid > 1000);
 
     if (isAcOn) {
@@ -558,6 +566,14 @@ async function fetchData() {
       });
     } else {
       battFlows.forEach(id => document.getElementById(id).style.display = 'none');
+    }
+
+    // --- INVERTER TO 2ND FLOOR FLOW LOGIC ---
+    const invFlow = document.getElementById('invFlow1');
+    if (invPower !== null && invPower > 0) {
+      invFlow.style.display = 'block';
+    } else {
+      invFlow.style.display = 'none';
     }
 
   } catch (e) {
