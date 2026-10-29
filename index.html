@@ -151,7 +151,7 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
-/* --- ENERGY FLOW LINES --- */
+/* --- ENERGY FLOW LINES (SHORT & FAST) --- */
 .flow-line {
   position: absolute;
   z-index: 5;
@@ -161,36 +161,36 @@ body{
 
 /* Cyan PV Lines */
 .flow-line.cyan.vertical {
-  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--cyan) 10px, var(--cyan) 25px);
+  background: repeating-linear-gradient(to bottom, transparent, transparent 5px, var(--cyan) 5px, var(--cyan) 13px);
   box-shadow: 0 0 8px var(--cyan);
-  animation: flowDown 0.8s linear infinite;
+  animation: flowDown 0.5s linear infinite;
 }
 .flow-line.cyan.horizontal {
-  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--cyan) 10px, var(--cyan) 25px);
+  background: repeating-linear-gradient(to right, transparent, transparent 5px, var(--cyan) 5px, var(--cyan) 13px);
   box-shadow: 0 0 8px var(--cyan);
-  animation: flowRight 0.8s linear infinite;
+  animation: flowRight 0.5s linear infinite;
 }
 .flow-line.cyan.horizontal.reverse {
-  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--cyan) 10px, var(--cyan) 25px);
+  background: repeating-linear-gradient(to left, transparent, transparent 5px, var(--cyan) 5px, var(--cyan) 13px);
   box-shadow: 0 0 8px var(--cyan);
-  animation: flowLeft 0.8s linear infinite;
+  animation: flowLeft 0.5s linear infinite;
 }
 
 /* Red Grid Lines */
 .flow-line.red.horizontal {
-  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  background: repeating-linear-gradient(to right, transparent, transparent 5px, var(--red) 5px, var(--red) 13px);
   box-shadow: 0 0 8px var(--red);
-  animation: flowRight 0.8s linear infinite;
+  animation: flowRight 0.5s linear infinite;
 }
 .flow-line.red.vertical {
-  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  background: repeating-linear-gradient(to bottom, transparent, transparent 5px, var(--red) 5px, var(--red) 13px);
   box-shadow: 0 0 8px var(--red);
-  animation: flowDown 0.8s linear infinite;
+  animation: flowDown 0.5s linear infinite;
 }
 .flow-line.red.horizontal.reverse {
-  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--red) 10px, var(--red) 25px);
+  background: repeating-linear-gradient(to left, transparent, transparent 5px, var(--red) 5px, var(--red) 13px);
   box-shadow: 0 0 8px var(--red);
-  animation: flowLeft 0.8s linear infinite;
+  animation: flowLeft 0.5s linear infinite;
 }
 
 /* PV Segments */
@@ -198,7 +198,7 @@ body{
 .seg2 { top: 36%; left: 51%; width: 2px; height: 20%; }
 .seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
 
-/* Main Grid Segments (Tower to Total Grid card) - Shifted to 40% */
+/* Main Grid Segments (Tower to Total Grid card) */
 .grid-seg1a { top: 40%; left: 5%; width: 12%; height: 2px; }
 .grid-seg1b { top: 40%; left: 17%; width: 2px; height: 6%; }
 .grid-seg1c { top: 46%; left: 12%; width: 5%; height: 2px; }
@@ -210,15 +210,15 @@ body{
 
 @keyframes flowDown {
   0% { background-position: 0 0; }
-  100% { background-position: 0 25px; }
+  100% { background-position: 0 18px; }
 }
 @keyframes flowRight {
   0% { background-position: 0 0; }
-  100% { background-position: 25px 0; }
+  100% { background-position: 18px 0; }
 }
 @keyframes flowLeft {
   0% { background-position: 0 0; }
-  100% { background-position: -25px 0; }
+  100% { background-position: -18px 0; }
 }
 
 </style>
