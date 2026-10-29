@@ -101,7 +101,6 @@ body{
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-/* Default Grid Theme for 2nd Floor */
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
@@ -202,7 +201,7 @@ body{
 .dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
 
 /* --- ENERGY FLOW LINES --- */
-.flow-line { position: absolute; z-index: 15; display: none; border-radius: 3px; }
+.flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
 @keyframes flowDown { 0% { background-position: 0 0; } 100% { background-position: 0 9px; } }
 @keyframes flowUp { 0% { background-position: 0 0; } 100% { background-position: 0 -9px; } }
 @keyframes flowRight { 0% { background-position: 0 0; } 100% { background-position: 9px 0; } }
@@ -250,7 +249,7 @@ body{
 .ac-seg2 { top: 40%; left: 55%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 55%; width: 38%; height: 3px; }
 
-/* Inverter to 2nd Floor Segments (3 Segments) */
+/* Inverter to 2nd Floor Segments */
 .inv-seg1 { bottom: 41.5%; right: 5%; width: 40%; height: 3px; }
 .inv-seg2 { bottom: 37%; right: 45%; width: 3px; height: 4.5%; }
 .inv-seg3 { bottom: 37%; right: 45%; width: 35%; height: 3px; }
@@ -287,7 +286,7 @@ body{
   <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
   
-  <!-- INVERTER TO 2ND FLOOR LINES (3 SEGMENTS) -->
+  <!-- INVERTER TO 2ND FLOOR LINES -->
   <div class="flow-line inv-green horizontal inv-seg1" id="invFlow1"></div>
   <div class="flow-line inv-green vertical inv-seg2" id="invFlow2"></div>
   <div class="flow-line inv-green horizontal reverse inv-seg3" id="invFlow3"></div>
