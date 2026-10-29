@@ -83,24 +83,12 @@ body{
 .pv-power { top: 16%; left: 45%; }
 .pv-volt { top: 16%; right: 7%; }
 
-/* Weather Card (Proj PV & Cloud Cover) - Widened */
 .weather-data { 
-  top: 18%; 
-  left: 5%; 
-  min-width: 105px; /* Widened the card */
-  border-color: var(--gold); 
-  box-shadow: 0 0 15px #ffc24730; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 4px;
+  top: 18%; left: 5%; min-width: 105px; 
+  border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; 
+  display: flex; flex-direction: column; gap: 4px;
 }
-.weather-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 800;
-}
+.weather-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; }
 .weather-row .weather-label { color: #ffda83; font-size: 8px; letter-spacing: .5px; margin-right: 8px; }
 .weather-row .weather-value { color: #fff; font-size: 14px; text-align: right; flex-grow: 1;}
 .weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
@@ -131,10 +119,7 @@ body{
   border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
   display: flex; flex-direction: column; justify-content: center;
 }
-.presence-row {
-  display: flex; justify-content: space-between;
-  font-size: 11px; font-weight: 800; margin-bottom: 2px;
-}
+.presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
 .presence-row .name { color: #d1d5db; }
 .presence-row .status { color: #6b7280; }
 .presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
@@ -144,10 +129,7 @@ body{
   border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
   display: flex; flex-direction: column; justify-content: center;
 }
-.device-row {
-  display: flex; justify-content: space-between;
-  font-size: 9px; font-weight: 800; margin-bottom: 2px;
-}
+.device-row { display: flex; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 2px; }
 .device-row .name { color: #d1d5db; margin-right: 8px;}
 .device-row .status { color: #ef4444; }
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
@@ -168,6 +150,50 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
+/* --- ENERGY FLOW LINES --- */
+.flow-line {
+  position: absolute;
+  background: rgba(48, 229, 255, 0.2); /* Faint background line */
+  z-index: 5;
+  display: none; /* Hidden by default */
+}
+
+/* The glowing pulse that moves along the line */
+.flow-pulse {
+  position: absolute;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+  border-radius: 4px;
+  top: 0;
+  left: 0;
+}
+
+/* Segment 1: PV Card down to Center */
+.seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
+.seg1 .flow-pulse { width: 3px; height: 20px; animation: flowDown 1.5s linear infinite; }
+
+/* Segment 2: Center down to Floor between floors */
+.seg2 { top: 36%; left: 51%; width: 3px; height: 20%; }
+.seg2 .flow-pulse { width: 3px; height: 20px; animation: flowDown 1.5s linear infinite; animation-delay: 0.5s; }
+
+/* Segment 3: Floor horizontally to Inverter card */
+.seg3 { top: 56%; left: 51%; width: 44%; height: 3px; }
+.seg3 .flow-pulse { width: 20px; height: 3px; animation: flowRight 1.5s linear infinite; animation-delay: 1s; }
+
+@keyframes flowDown {
+  0% { top: -20px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes flowRight {
+  0% { left: -20px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -178,6 +204,11 @@ body{
   <div class="title-card">
     <div class="brand">PAULPACS · SOLAR HOME<small>SMART HOME ENERGY</small></div>
   </div>
+
+  <!-- FLOW LINES -->
+  <div class="flow-line seg1" id="flow1"><div class="flow-pulse"></div></div>
+  <div class="flow-line seg2" id="flow2"><div class="flow-pulse"></div></div>
+  <div class="flow-line seg3" id="flow3"><div class="flow-pulse"></div></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -191,7 +222,6 @@ body{
     <span class="unit">V</span>
   </div>
 
-  <!-- Weather Card -->
   <div class="readout weather-data">
     <div class="weather-row">
       <span class="weather-label">Est PV</span>
@@ -297,7 +327,6 @@ body{
 
 <script>
 const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/live_data.json';
-const GITHUB_JSON_URL = ''; // We don't need this anymore
 
 const history = { pv: [], inv: [] };
 const MAX_POINTS = 21;
@@ -389,7 +418,6 @@ async function fetchData() {
     const res = await fetch(GITHUB_API_URL + '?t=' + new Date().getTime());
     const apiData = await res.json();
     
-    // GitHub API returns the file encoded in Base64. We decode it here:
     const decodedContent = atob(apiData.content.replace(/\s/g, ''));
     const data = JSON.parse(decodedContent);
     
@@ -409,7 +437,6 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Update Weather Card
     if (irr !== null) {
       const expectedPv = (irr / 1000) * 1785;
       document.getElementById('expectedPv').textContent = Math.round(expectedPv);
@@ -442,6 +469,14 @@ async function fetchData() {
     } else {
       acValue.textContent = 'OFF';
       acCard.classList.remove('ac-on');
+    }
+
+    // --- ENERGY FLOW LOGIC ---
+    const flows = ['flow1', 'flow2', 'flow3'];
+    if (pvPower !== null && pvPower > 0) {
+      flows.forEach(id => document.getElementById(id).style.display = 'block');
+    } else {
+      flows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
   } catch (e) {
