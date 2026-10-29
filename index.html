@@ -196,6 +196,7 @@ body{
 .energy-val-yest { font-size: 11px; font-weight: 700; color: #a6d6f2; display: block; margin-top: 4px; }
 .dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
 
+/* --- ENERGY FLOW LINES --- */
 .flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
 @keyframes flowDown { 0% { background-position: 0 0; } 100% { background-position: 0 9px; } }
 @keyframes flowUp { 0% { background-position: 0 0; } 100% { background-position: 0 -9px; } }
@@ -233,13 +234,13 @@ body{
 .grid-seg3 { top: 48%; left: 37%; width: 3px; height: 13%; }
 .grid-seg4 { top: 61%; left: 18%; width: 19%; height: 3px; }
 
-/* Battery Segments (New Path: Inverter Right -> Left -> Down -> Right -> Batt Top) */
-/* 1. Start at right of Inverter, go left */
-.batt-seg1 { bottom: 48%; right: 3%; width: 20%; height: 3px; }
-/* 2. Go down to batt volt top level */
-.batt-seg2 { bottom: 17%; right: 23%; width: 3px; height: 31%; }
-/* 3. Go right into batt volt card */
-.batt-seg3 { bottom: 17%; right: 8%; width: 15%; height: 3px; }
+/* Battery Segments (Start right 23%, go left 10%, down, right) */
+/* 1. Start bottom 48, right 23, go left */
+.batt-seg1 { bottom: 48%; right: 23%; width: 10%; height: 3px; }
+/* 2. Go down */
+.batt-seg2 { bottom: 17%; right: 33%; width: 3px; height: 31%; }
+/* 3. Go right to Battery Volt */
+.batt-seg3 { bottom: 17%; right: 8%; width: 25%; height: 3px; }
 
 /* AC Segments */
 .ac-seg1 { top: 64%; left: 25%; width: 30%; height: 3px; }
@@ -272,8 +273,8 @@ body{
   <div class="flow-line red grid-seg3 vertical" id="floorFlow2"></div>
   <div class="flow-line red grid-seg4 horizontal reverse" id="floorFlow3"></div>
   
-  <!-- NEW BATTERY FLOW LINES -->
-  <div class="flow-line batt-green batt-seg1 horizontal reverse" id="battFlow1"></div>
+  <!-- BATTERY FLOW LINES -->
+  <div class="flow-line batt-green batt-seg1 horizontal" id="battFlow1"></div>
   <div class="flow-line batt-green batt-seg2 vertical" id="battFlow2"></div>
   <div class="flow-line batt-green batt-seg3 horizontal" id="battFlow3"></div>
 
@@ -530,7 +531,6 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Update Modal Data
     show('mTodayPv', num(data.today_pv_kwh), 2, 'kWh');
     show('mYestPv', num(data.yesterday_pv_kwh), 2, 'kWh');
     show('mTodayInv', num(data.today_inverter_kwh), 2, 'kWh');
@@ -613,11 +613,11 @@ async function fetchData() {
         const el = document.getElementById(id);
         el.style.display = 'block';
         if (isCharging) {
-          // Flow: Left (from inverter), Down, Right (to battery)
+          // Flow: Left, Down, Right
           el.classList.remove('up', 'reverse');
           if (id === 'battFlow1') el.classList.add('reverse');
         } else {
-          // Flow: Left (from battery), Up, Right (to inverter)
+          // Flow: Left, Up, Right
           el.classList.add('up');
           if (id === 'battFlow1') el.classList.remove('reverse');
           if (id === 'battFlow3') el.classList.add('reverse');
