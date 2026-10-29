@@ -26,51 +26,37 @@ body{
   overflow:hidden;
 }
 
-/* Header */
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 14px;
-  border:1px solid #124b7b;
-  border-radius:12px;
-  background:#04162beF;
-  flex-shrink:0;
-  margin-bottom:8px;
-  z-index:10;
-}
-.brand{font-weight:850;letter-spacing:1px;color:#eaf7ff}
-.brand small{display:block;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700}
-.live{font-size:10px;color:var(--green);border:1px solid #1c775b;border-radius:99px;padding:4px 8px}
-
-/* The Image Container */
+/* Main Container */
 .scene{
   position:relative;
   width:100%;
-  flex:1;
+  flex: 1; /* Takes up remaining space above graphs */
   border:1px solid #145080;
   border-radius:15px;
   background:#03132a;
   overflow:hidden;
   box-shadow:0 8px 25px #0008;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
-/* The House Image */
+/* The House Image (Natural scaling) */
 .scene img{
   width:100%;
   height:100%;
-  object-fit:fill; /* Changed from cover to fill */
-  /* We removed the transform scale so it doesn't zoom in */
+  object-fit:cover;
+  object-position: top center; /* Align to top so panels are visible */
 }
 
-/* The Title Card (Covers the top text) */
+/* The Title Card (Moved up to cover "PROTOTYPE") */
 .title-card{
   position:absolute;
-  top: 3%;
+  top: 0.5%;
   left: 50%;
   transform: translateX(-50%);
-  width: 70%;
-  background: rgba(2, 9, 22, 0.9);
+  width: 75%;
+  background: rgba(2, 9, 22, 0.95);
   border: 1px solid #124b7b;
   border-radius: 8px;
   padding: 6px;
@@ -78,8 +64,8 @@ header{
   z-index: 20;
   box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
-.title-card .brand{font-size: 12px;}
-.title-card .brand small{font-size: 8px;}
+.title-card .brand{font-size: 12px; color:#eaf7ff; font-weight:850; letter-spacing:1px;}
+.title-card .brand small{display:block; font-size: 8px; color:var(--cyan); letter-spacing:2px; font-weight:700;}
 
 /* Floating Readouts */
 .readout{
@@ -91,88 +77,63 @@ header{
   box-shadow:0 0 15px #00cfff38;
   backdrop-filter:blur(4px);
   z-index:10;
+  min-width: 80px;
 }
 .readout .label{display:block;font-size:8px;font-weight:800;letter-spacing:.5px;color:#8beaff}
 .readout .value{display:block;font-size:16px;font-weight:900;line-height:1.1}
 .readout .unit{font-size:8px;color:#a6d6f2}
 
 /* Specific Readout Placements */
-.pv-power { top: 18%; left: 5%; }
-.pv-volt { top: 26%; left: 5%; min-width: 80px; }
+/* PV side-by-side under panels */
+.pv-power { top: 22%; left: 5%; }
+.pv-volt { top: 22%; right: 5%; }
+
 .inv-output { top: 35%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
+
 .ac-read { top: 45%; left: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
 .ac-read .label { color: #ffca9b; }
-.total-grid { bottom: 25%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
+
+.total-grid { bottom: 20%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
-.floor-grid { bottom: 18%; left: 5%; min-width: 80px; border-color: var(--gold); }
+
+.floor-grid { bottom: 8%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
-/* Fake Battery and Inverter Graphics */
-.fake-inverter {
-  position: absolute;
-  bottom: 22%;
-  right: 5%;
-  width: 60px;
-  height: 45px;
-  background: #0a253e;
-  border: 2px solid var(--green);
-  border-radius: 8px;
-  box-shadow: 0 0 15px var(--green);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 15;
-}
-.fake-inverter::after {
-  content: "";
-  width: 30px;
-  height: 4px;
-  background: var(--green);
-  box-shadow: 0 0 8px var(--green);
-}
+.batt-soc { bottom: 20%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
+.batt-soc .label { color: #caff9c; }
 
-.fake-battery {
-  position: absolute;
-  bottom: 10%;
-  right: 5%;
-  width: 70px;
-  height: 80px;
-  background: #0a253e;
-  border: 2px solid var(--green);
-  border-radius: 8px;
-  box-shadow: 0 0 20px var(--green);
+.batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
+.batt-volt .label { color: #caff9c; }
+
+/* Graphs Section */
+.graphs-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 110px; /* Adjust if you want the graphs taller */
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+.graph-card{
+  background: var(--card-bg);
+  border:1px solid #15416a;
+  border-radius:10px;
+  padding:8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 4px;
-  z-index: 15;
-  overflow: hidden;
 }
-.fake-battery .fill {
-  width: 100%;
-  height: 50%; /* Will be updated by JS */
-  background: var(--green);
-  border-radius: 4px;
-  box-shadow: 0 0 10px var(--green);
-  transition: height 0.5s ease;
-}
+.graph-head{display:flex;justify-content:space-between;margin-bottom:4px}
+.graph-title{font-size:9px;font-weight:800;color:#b6d9f6}
+.graph-current{font-size:12px;font-weight:900}
+.graph-card canvas{display:block;width:100%;flex:1;min-height:0;}
 
-/* Battery Telemetry positioned next to the graphic */
-.batt-soc { bottom: 12%; right: 35%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
-.batt-soc .label { color: #caff9c; }
-.batt-volt { bottom: 5%; right: 35%; min-width: 80px; border-color:#a6ff70; }
-.batt-volt .label { color: #caff9c; }
+.graph-pv .graph-current{color:var(--cyan)}
+.graph-inv .graph-current{color:var(--green)}
 
 </style>
 </head>
 <body>
-
-<header>
-  <div class="brand">PAULPACS · SOLAR<small>MOBILE TELEMETRY</small></div>
-  <div class="live">LIVE</div>
-</header>
 
 <div class="scene">
   <img src="house.jpg" alt="Solar Home">
@@ -218,12 +179,6 @@ header{
     <span class="unit">W</span>
   </div>
 
-  <!-- Fake Battery & Inverter Graphics -->
-  <div class="fake-inverter"></div>
-  <div class="fake-battery">
-    <div class="fill" id="batteryFill"></div>
-  </div>
-
   <div class="readout batt-soc">
     <span class="label">BATTERY SOC</span>
     <span class="value" id="soc">—</span>
@@ -235,11 +190,36 @@ header{
     <span class="value" id="battery">—</span>
     <span class="unit">V</span>
   </div>
+</div>
 
+<!-- Live Graphs Section -->
+<div class="graphs-container">
+  <div class="graph-card graph-pv">
+    <div class="graph-head">
+      <div class="graph-title">PV POWER</div>
+      <div class="graph-current" id="chartPvCurrent">— W</div>
+    </div>
+    <canvas id="chartPv"></canvas>
+  </div>
+  <div class="graph-card graph-inv">
+    <div class="graph-head">
+      <div class="graph-title">INVERTER</div>
+      <div class="graph-current" id="chartInvCurrent">— W</div>
+    </div>
+    <canvas id="chartInv"></canvas>
+  </div>
 </div>
 
 <script>
 const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Paulpacs/solar-mobile/main/live_data.json';
+
+// Chart Data
+const history = { pv: [], inv: [] };
+const MAX_POINTS = 36;
+const charts = [
+  { key: 'pv', canvas: 'chartPv', current: 'chartPvCurrent', color: '#30e5ff', fill: 'rgba(48,229,255,.13)' },
+  { key: 'inv', canvas: 'chartInv', current: 'chartInvCurrent', color: '#4cffb0', fill: 'rgba(76,255,176,.13)' }
+];
 
 function num(v){ 
   if(v===null||v===undefined||v===''||String(v).toLowerCase()==='nan') return null; 
@@ -253,6 +233,41 @@ function show(id, v, dec, unit='') {
   el.textContent = v === null ? '—' : v.toFixed(dec) + (unit ? ' '+unit : '');
 }
 
+function drawChart(c){
+ const canvas=document.getElementById(c.canvas);if(!canvas)return;
+ const rect=canvas.getBoundingClientRect();if(!rect.width)return;
+ const dpr=window.devicePixelRatio||1;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);
+ const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const w=rect.width,h=rect.height;
+ ctx.clearRect(0,0,w,h);const pad=4,plotH=h-8,plotW=w-8;
+ ctx.strokeStyle='rgba(126,177,216,.14)';ctx.lineWidth=1;
+ for(let i=1;i<=3;i++){const y=pad+plotH*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ const data=history[c.key];if(!data.length){ctx.fillStyle='#6d91b1';ctx.font='10px system-ui';ctx.fillText('Waiting…',8,h/2+3);return}
+ const max=Math.max(100,...data)*1.08;
+ const pts=data.map((v,i)=>({x:pad+(data.length===1?plotW/2:i*plotW/(MAX_POINTS-1)),y:pad+plotH-(Math.max(0,v)/max)*plotH}));
+ if(pts.length>1){ctx.beginPath();ctx.moveTo(pts[0].x,h-pad);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,h-pad);ctx.closePath();ctx.fillStyle=c.fill;ctx.fill()}
+ ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=c.color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';ctx.shadowColor=c.color;ctx.shadowBlur=6;ctx.stroke();ctx.shadowBlur=0;
+ const last=pts[pts.length-1];ctx.beginPath();ctx.arc(last.x,last.y,3,0,Math.PI*2);ctx.fillStyle=c.color;ctx.fill();
+}
+
+function renderCharts(){
+ charts.forEach(c=>{
+   const data=history[c.key],latest=data.length?data[data.length-1]:null;
+   const el=document.getElementById(c.current);
+   if(el)el.textContent=latest===null?'— W':Math.round(latest)+' W';
+   drawChart(c);
+ });
+}
+
+function recordSample(key,value){
+  const n=num(value);if(n===null)return;
+  const a=history[key];
+  if(!a.length||a[a.length-1]!==n){
+    a.push(n);
+    if(a.length>MAX_POINTS)a.shift();
+    renderCharts();
+  }
+}
+
 async function fetchData() {
   try {
     const res = await fetch(GITHUB_JSON_URL + '?t=' + new Date().getTime());
@@ -260,26 +275,24 @@ async function fetchData() {
     
     if (!data.updated_at) return;
 
-    show('pvpower', num(data.pv_power), 0);
+    const pvPower = num(data.pv_power);
+    const invPower = num(data.inverter_power);
+
+    show('pvpower', pvPower, 0);
     show('pvvoltage', num(data.pv_voltage), 1);
-    show('invpower', num(data.inverter_power), 0);
+    show('invpower', invPower, 0);
     show('totalgrid', num(data.total_grid), 0);
     show('floorgrid', num(data.floor_grid), 0);
-    
-    const socVal = num(data.battery_soc);
-    show('soc', socVal, 0);
+    show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
-    // Update the fake battery fill height
-    if (socVal !== null) {
-      document.getElementById('batteryFill').style.height = socVal + '%';
-    }
+    // Update Graphs
+    if (pvPower !== null) recordSample('pv', pvPower);
+    if (invPower !== null) recordSample('inv', invPower);
 
     // AC Logic
-    const invPower = num(data.inverter_power);
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
-    
     if (invPower !== null && invPower > 1200) {
       acValue.textContent = 'ON';
       acCard.classList.add('ac-on');
@@ -293,8 +306,12 @@ async function fetchData() {
   }
 }
 
+// Initialization
 fetchData();
 setInterval(fetchData, 60000);
+window.addEventListener('resize', renderCharts);
+setTimeout(renderCharts, 500); // Draw empty grids on load
+
 </script>
 </body>
 </html>
