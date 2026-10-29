@@ -197,7 +197,7 @@ body{
 .dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
 
 /* --- ENERGY FLOW LINES --- */
-.flow-line { position: absolute; z-index: 5; display: none; border-radius: 3px; }
+.flow-line { position: absolute; z-index: 15; display: none; border-radius: 3px; }
 @keyframes flowDown { 0% { background-position: 0 0; } 100% { background-position: 0 9px; } }
 @keyframes flowUp { 0% { background-position: 0 0; } 100% { background-position: 0 -9px; } }
 @keyframes flowRight { 0% { background-position: 0 0; } 100% { background-position: 9px 0; } }
@@ -218,6 +218,7 @@ body{
 .flow-line.batt-green.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowLeft 0.4s linear infinite; }
 
 .flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.4s linear infinite; }
+.flow-line.inv-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowDown 0.4s linear infinite; }
 
 /* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
@@ -244,10 +245,13 @@ body{
 .ac-seg2 { top: 40%; left: 55%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 55%; width: 38%; height: 3px; }
 
-/* Inverter to 2nd Floor Segment */
-/* Starts at bottom 41.5% (top 58.5%), right 5% (side of inverter) */
-/* Goes left to 50%, then drops down to 62%, then left to 2nd floor card */
-.inv-seg1 { bottom: 41.5%; right: 5%; width: 45%; height: 3px; }
+/* Inverter to 2nd Floor Segments (New 3-Segment Path) */
+/* 1. Start at inverter, go left to center of house */
+.inv-seg1 { bottom: 41.5%; right: 5%; width: 40%; height: 3px; }
+/* 2. Go down to 2nd floor card level */
+.inv-seg2 { bottom: 37%; right: 45%; width: 3px; height: 4.5%; }
+/* 3. Go left into 2nd floor card */
+.inv-seg3 { bottom: 37%; right: 45%; width: 35%; height: 3px; }
 
 </style>
 </head>
@@ -281,8 +285,10 @@ body{
   <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
   
-  <!-- INVERTER TO 2ND FLOOR LINE -->
+  <!-- INVERTER TO 2ND FLOOR LINES (3 SEGMENTS) -->
   <div class="flow-line inv-green horizontal inv-seg1" id="invFlow1"></div>
+  <div class="flow-line inv-green vertical inv-seg2" id="invFlow2"></div>
+  <div class="flow-line inv-green horizontal reverse inv-seg3" id="invFlow3"></div>
 
   <!-- CARDS -->
   <div class="readout pv-power">
@@ -627,11 +633,11 @@ async function fetchData() {
     }
 
     // --- INVERTER TO 2ND FLOOR FLOW LOGIC ---
-    const invFlow = document.getElementById('invFlow1');
+    const invFlows = ['invFlow1', 'invFlow2', 'invFlow3'];
     if (invPower !== null && invPower > 0) {
-      invFlow.style.display = 'block';
+      invFlows.forEach(id => document.getElementById(id).style.display = 'block');
     } else {
-      invFlow.style.display = 'none';
+      invFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
   } catch (e) {
