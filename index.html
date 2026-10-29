@@ -16,7 +16,6 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  /* Added a bit more padding at the bottom so graphs don't touch the screen edge */
   padding:10px 10px 20px 10px; 
   background:radial-gradient(ellipse at 50% 0%,#082956,#020916 60%);
   color:var(--text);
@@ -31,7 +30,7 @@ body{
 .scene{
   position:relative;
   width:100%;
-  flex: 1; /* Takes up remaining space */
+  flex: 1; 
   border:1px solid #145080;
   border-radius:15px;
   background:#03132a;
@@ -40,7 +39,7 @@ body{
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-bottom: 8px; /* Space between house and graphs */
+  margin-bottom: 8px; 
 }
 
 /* The House Image */
@@ -86,33 +85,38 @@ body{
 .readout .unit{font-size:8px;color:#a6d6f2}
 
 /* Specific Readout Placements */
-.pv-power { top: 22%; left: 5%; }
-.pv-volt { top: 22%; right: 5%; }
+/* PV moved up and outwards */
+.pv-power { top: 14%; left: 10%; }
+.pv-volt { top: 14%; right: 10%; }
 
-.inv-output { top: 35%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
-.inv-output .label { color: #7dffca; }
-
-.ac-read { top: 45%; left: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
+/* Window AC moved to middle right */
+.ac-read { top: 35%; right: 5%; border-color: #ff9b54; box-shadow: 0 0 15px #ff9b5460; }
 .ac-read .label { color: #ffca9b; }
 
-.total-grid { bottom: 20%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
+/* Inverter moved to bottom right next to Battery SOC */
+.inv-output { bottom: 20%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
+.inv-output .label { color: #7dffca; }
+
+/* Grid cards moved to middle left */
+.total-grid { top: 45%; left: 5%; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
 
-.floor-grid { bottom: 8%; left: 5%; min-width: 80px; border-color: var(--gold); }
+.floor-grid { top: 58%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
 
-.batt-soc { bottom: 20%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
+/* Battery cards stay bottom right */
+.batt-soc { bottom: 35%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
 .batt-soc .label { color: #caff9c; }
 
 .batt-volt { bottom: 8%; right: 5%; min-width: 80px; border-color:#a6ff70; }
 .batt-volt .label { color: #caff9c; }
 
-/* Graphs Section - Adjusted Height to allow pull up */
+/* Graphs Section */
 .graphs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  height: 160px; /* Reduced slightly from 180px */
+  height: 160px; 
   flex-shrink: 0;
 }
 .graph-card{
@@ -156,15 +160,15 @@ body{
     <span class="unit">V</span>
   </div>
 
+  <div class="readout ac-read" id="acCard">
+    <span class="label">WINDOW AC</span>
+    <span class="value" id="acValue">OFF</span>
+  </div>
+
   <div class="readout inv-output">
     <span class="label">INVERTER</span>
     <span class="value" id="invpower">—</span>
     <span class="unit">W</span>
-  </div>
-
-  <div class="readout ac-read" id="acCard">
-    <span class="label">WINDOW AC</span>
-    <span class="value" id="acValue">OFF</span>
   </div>
 
   <div class="readout total-grid">
