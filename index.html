@@ -10,6 +10,7 @@
   --cyan:#30e5ff;
   --green:#4cffb0;
   --gold:#ffc247;
+  --orange:#ff6b00; /* NEW: Bright Neon Orange */
   --text:#f4fbff;
   --card-bg: #03172beF;
 }
@@ -99,7 +100,6 @@ body{
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-/* Adjusted Total Grid width slightly to accommodate the new line */
 .total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
 .total-grid .label { color: #ffda83; }
 
@@ -171,20 +171,20 @@ body{
   animation: flowRight 0.8s linear infinite;
 }
 
-/* Gold Grid Lines */
-.flow-line.gold.horizontal {
-  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
-  box-shadow: 0 0 8px var(--gold);
+/* Orange Grid Lines */
+.flow-line.orange.horizontal {
+  background: repeating-linear-gradient(to right, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
+  box-shadow: 0 0 8px var(--orange);
   animation: flowRight 0.8s linear infinite;
 }
-.flow-line.gold.vertical {
-  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
-  box-shadow: 0 0 8px var(--gold);
+.flow-line.orange.vertical {
+  background: repeating-linear-gradient(to bottom, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
+  box-shadow: 0 0 8px var(--orange);
   animation: flowDown 0.8s linear infinite;
 }
-.flow-line.gold.horizontal.reverse {
-  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--gold) 10px, var(--gold) 25px);
-  box-shadow: 0 0 8px var(--gold);
+.flow-line.orange.horizontal.reverse {
+  background: repeating-linear-gradient(to left, transparent, transparent 10px, var(--orange) 10px, var(--orange) 25px);
+  box-shadow: 0 0 8px var(--orange);
   animation: flowLeft 0.8s linear infinite;
 }
 
@@ -196,12 +196,9 @@ body{
 /* Grid Segments (From tower to Total Grid card) */
 .grid-seg1 { top: 48%; left: 12%; width: 20%; height: 2px; }
 
-/* New Floor Grid Segments (Total -> Right -> Down -> Left -> Floor) */
-/* 1. Right from Total Grid */
+/* Floor Grid Segments (Total -> Right -> Down -> Left -> Floor) */
 .grid-seg2 { top: 48%; left: 25%; width: 6%; height: 2px; }
-/* 2. Down to Floor Grid level */
 .grid-seg3 { top: 48%; left: 31%; width: 2px; height: 13%; }
-/* 3. Left into Floor Grid */
 .grid-seg4 { top: 61%; left: 18%; width: 13%; height: 2px; }
 
 @keyframes flowDown {
@@ -233,12 +230,12 @@ body{
   <div class="flow-line cyan seg2 vertical" id="flow2"></div>
   <div class="flow-line cyan seg3 horizontal" id="flow3"></div>
 
-  <!-- GRID FLOW LINES (GOLD) -->
-  <div class="flow-line gold grid-seg1 horizontal" id="gridFlow1"></div>
+  <!-- GRID FLOW LINES (ORANGE) -->
+  <div class="flow-line orange grid-seg1 horizontal" id="gridFlow1"></div>
   
-  <div class="flow-line gold grid-seg2 horizontal" id="floorFlow1"></div>
-  <div class="flow-line gold grid-seg3 vertical" id="floorFlow2"></div>
-  <div class="flow-line gold grid-seg4 horizontal reverse" id="floorFlow3"></div>
+  <div class="flow-line orange grid-seg2 horizontal" id="floorFlow1"></div>
+  <div class="flow-line orange grid-seg3 vertical" id="floorFlow2"></div>
+  <div class="flow-line orange grid-seg4 horizontal reverse" id="floorFlow3"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -512,7 +509,7 @@ async function fetchData() {
       pvFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // Main Grid Flow (Gold)
+    // Main Grid Flow (Orange)
     const gridFlow = document.getElementById('gridFlow1');
     if (totalGrid !== null && totalGrid > 0) {
       gridFlow.style.display = 'block';
@@ -520,7 +517,7 @@ async function fetchData() {
       gridFlow.style.display = 'none';
     }
 
-    // 2nd Floor Grid Flow (Gold)
+    // 2nd Floor Grid Flow (Orange)
     const floorFlows = ['floorFlow1', 'floorFlow2', 'floorFlow3'];
     if (floorGrid !== null && floorGrid > 0) {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'block');
