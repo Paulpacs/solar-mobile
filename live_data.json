@@ -1,1 +1,12 @@
-{}
+{
+  "updated_at": "2026-10-29T04:38:55.939Z",
+  "battery": "52.8",
+  "pvpower": "1449",
+  "pvvoltage": "101",
+  "invpower": "1577",
+  "floorgrid": "0",
+  "totalgrid": "4.1",
+  "irradiance": "619",
+  "cloudcover": "29",
+  "soc": "51"
+}
