@@ -11,6 +11,7 @@
   --green:#4cffb0;
   --gold:#ffc247;
   --red:#ff2a2a; 
+  --batt-green:#a6ff70; 
   --text:#f4fbff;
   --card-bg: #03172beF;
 }
@@ -109,10 +110,10 @@ body{
 .grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .grid-volt .label { color: #ffda83; }
 
-.batt-soc { bottom: 23%; right: 5%; border-color:#a6ff70; box-shadow: 0 0 15px #a6ff7030; }
+.batt-soc { bottom: 23%; right: 5%; border-color:var(--batt-green); box-shadow: 0 0 15px #a6ff7030; }
 .batt-soc .label { color: #caff9c; }
 
-.batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:#a6ff70; }
+.batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:var(--batt-green); }
 .batt-volt .label { color: #caff9c; }
 
 .presence { 
@@ -151,7 +152,7 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
-/* --- ENERGY FLOW LINES (SHORT & FAST) --- */
+/* --- ENERGY FLOW LINES --- */
 .flow-line {
   position: absolute;
   z-index: 5;
@@ -193,12 +194,34 @@ body{
   animation: flowLeft 0.5s linear infinite;
 }
 
+/* Battery Green Lines */
+.flow-line.batt-green.vertical {
+  background: repeating-linear-gradient(to bottom, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px);
+  box-shadow: 0 0 8px var(--batt-green);
+  animation: flowDown 0.5s linear infinite;
+}
+.flow-line.batt-green.vertical.up {
+  background: repeating-linear-gradient(to top, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px);
+  box-shadow: 0 0 8px var(--batt-green);
+  animation: flowUp 0.5s linear infinite;
+}
+.flow-line.batt-green.horizontal {
+  background: repeating-linear-gradient(to right, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px);
+  box-shadow: 0 0 8px var(--batt-green);
+  animation: flowRight 0.5s linear infinite;
+}
+.flow-line.batt-green.horizontal.reverse {
+  background: repeating-linear-gradient(to left, transparent, transparent 5px, var(--batt-green) 5px, var(--batt-green) 13px);
+  box-shadow: 0 0 8px var(--batt-green);
+  animation: flowLeft 0.5s linear infinite;
+}
+
 /* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 2px; height: 12%; }
 .seg2 { top: 36%; left: 51%; width: 2px; height: 20%; }
 .seg3 { top: 56%; left: 51%; width: 44%; height: 2px; }
 
-/* Main Grid Segments (Tower to Total Grid card) */
+/* Main Grid Segments */
 .grid-seg1a { top: 40%; left: 5%; width: 12%; height: 2px; }
 .grid-seg1b { top: 40%; left: 17%; width: 2px; height: 6%; }
 .grid-seg1c { top: 46%; left: 12%; width: 5%; height: 2px; }
@@ -208,9 +231,23 @@ body{
 .grid-seg3 { top: 48%; left: 37%; width: 2px; height: 13%; }
 .grid-seg4 { top: 61%; left: 18%; width: 19%; height: 2px; }
 
+/* Battery Segments (Path: Inverter Bottom -> Left -> Down -> Right -> Batt Volt Top) */
+/* 1. Down from Inverter */
+.batt-seg1 { bottom: 44%; right: 12%; width: 2px; height: 4%; }
+/* 2. Left from Inverter */
+.batt-seg2 { bottom: 44%; right: 12%; width: 6%; height: 2px; }
+/* 3. Down to Battery Volt */
+.batt-seg3 { bottom: 17%; right: 18%; width: 2px; height: 27%; }
+/* 4. Right into Battery Volt */
+.batt-seg4 { bottom: 17%; right: 18%; width: 13%; height: 2px; }
+
 @keyframes flowDown {
   0% { background-position: 0 0; }
   100% { background-position: 0 18px; }
+}
+@keyframes flowUp {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 -18px; }
 }
 @keyframes flowRight {
   0% { background-position: 0 0; }
@@ -245,6 +282,13 @@ body{
   <div class="flow-line red grid-seg2 horizontal" id="floorFlow1"></div>
   <div class="flow-line red grid-seg3 vertical" id="floorFlow2"></div>
   <div class="flow-line red grid-seg4 horizontal reverse" id="floorFlow3"></div>
+
+  <!-- BATTERY FLOW LINES (GREEN) -->
+  <!-- Path: Inverter Bottom -> Left -> Down -> Right -> Batt Volt Top -->
+  <div class="flow-line batt-green batt-seg1 vertical" id="battFlow1"></div>
+  <div class="flow-line batt-green batt-seg2 horizontal" id="battFlow2"></div>
+  <div class="flow-line batt-green batt-seg3 vertical" id="battFlow3"></div>
+  <div class="flow-line batt-green batt-seg4 horizontal reverse" id="battFlow4"></div>
 
   <div class="readout pv-power">
     <span class="label">PV POWER</span>
@@ -532,6 +576,30 @@ async function fetchData() {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'block');
     } else {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'none');
+    }
+
+    // Battery Flow (Green)
+    // Rule: Visible if PV > 0 OR Inverter > 0
+    // Direction: Charging (Down) if PV > Inverter, Discharging (Up) if Inverter > PV
+    const battFlows = ['battFlow1', 'battFlow2', 'battFlow3', 'battFlow4'];
+    const battActive = (pvPower !== null && pvPower > 0) || (invPower !== null && invPower > 0);
+    
+    if (battActive) {
+      const isCharging = (pvPower > invPower);
+      battFlows.forEach(id => {
+        const el = document.getElementById(id);
+        el.style.display = 'block';
+        
+        // Adjust CSS classes for direction
+        if (isCharging) {
+          el.classList.remove('up', 'reverse');
+        } else {
+          el.classList.add('up');
+          if (id === 'battFlow2' || id === 'battFlow4') el.classList.add('reverse');
+        }
+      });
+    } else {
+      battFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
   } catch (e) {
