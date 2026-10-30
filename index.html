@@ -1155,12 +1155,29 @@ function drawCombinedChart() {
   
   const pad = 4, plotH = h - 8, plotW = w - 8;
   
-  // Draw grid lines
+  // Draw grid lines and labels
   ctx.strokeStyle = 'rgba(126,177,216,.14)';
   ctx.lineWidth = 1;
-  for (let i = 1; i <= 3; i++) {
+  ctx.font = '9px system-ui';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+
+  for (let i = 0; i <= 4; i++) {
     const y = pad + plotH * i / 4;
+    
+    // Draw the line
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    
+    // Add labels for 500, 1000, 1500 (skip top 2000 and bottom 0)
+    if (i > 0 && i < 4) {
+      const labelValue = i * 500;
+      // Dark halo so text is readable over grid lines
+      ctx.fillStyle = '#03132a'; 
+      ctx.fillText(labelValue, 2, y - 1); 
+      // The actual text (dark grey)
+      ctx.fillStyle = '#6b7280'; 
+      ctx.fillText(labelValue, 2, y - 1);
+    }
   }
 
   // Config for the 3 lines
