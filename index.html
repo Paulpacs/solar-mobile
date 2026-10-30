@@ -160,7 +160,7 @@ body{
 .presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
 .presence-row .name { color: var(--off-gray); }
 .presence-row .status { color: #6b7280; }
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
+.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); animation: breathe 2.5s ease-in-out infinite; }
 
 .device-status { 
   bottom: 1%; left: 52%; transform: translateX(-50%); width: 32%; height: 65px; 
@@ -170,7 +170,7 @@ body{
 .device-row { display: flex; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 2px; }
 .device-row .name { color: var(--off-gray); margin-right: 8px;}
 .device-row .status { color: #ef4444; }
-.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
+.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); animation: breathe 2.5s ease-in-out infinite; }
 
 .graphs-container {
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -275,6 +275,18 @@ body{
 /* Inverter to AC Segment */
 .inv-to-ac { top: 42%; left: 75%; width: 3px; height: 12%; }
 
+/* --- GLOW ANIMATIONS --- */
+@keyframes breathe {
+  0% { box-shadow: 0 0 5px var(--glow-color, transparent); }
+  50% { box-shadow: 0 0 20px var(--glow-color, transparent); }
+  100% { box-shadow: 0 0 5px var(--glow-color, transparent); }
+}
+
+.glow-cyan { --glow-color: #30e5ff80; animation: breathe 3s ease-in-out infinite; }
+.glow-green { --glow-color: #4cffb080; animation: breathe 3s ease-in-out infinite; }
+.glow-red { --glow-color: #ff2a2a80; animation: breathe 3s ease-in-out infinite; }
+.glow-batt { --glow-color: #a6ff7080; animation: breathe 3s ease-in-out infinite; }
+
 </style>
 </head>
 <body>
@@ -316,7 +328,7 @@ body{
   <div class="flow-line inv-green vertical up inv-to-ac" id="invToAcFlow"></div>
 
   <!-- CARDS -->
-  <div class="readout pv-power" onclick="openPvModal()">
+  <div class="readout pv-power" id="cardPv" onclick="openPvModal()">
     <span class="label">PV POWER</span>
     <span class="value" id="pvpower">—</span>
     <span class="unit">W</span>
@@ -346,13 +358,13 @@ body{
     <span class="value" id="acValue">OFF</span>
   </div>
   
-  <div class="readout inv-output" id="invCard" onclick="openInvModal()">
+  <div class="readout inv-output" id="cardInv" onclick="openInvModal()">
     <span class="label">INVERTER</span>
     <span class="value" id="invpower">—</span>
     <span class="unit">W</span>
   </div>
   
-  <div class="readout total-grid" onclick="openGridModal()">
+  <div class="readout total-grid" id="cardGrid" onclick="openGridModal()">
     <span class="label">TOTAL GRID</span>
     <span class="value" id="totalgrid">—</span>
     <span class="unit">W</span>
@@ -369,7 +381,7 @@ body{
     <span class="value" id="gridvoltage">—</span>
     <span class="unit">V</span>
   </div>
-  <div class="readout batt-soc" onclick="openBattModal()">
+  <div class="readout batt-soc" id="cardBattSoc" onclick="openBattModal()">
     <span class="label">BATTERY SOC</span>
     <span class="value" id="soc">—</span>
     <span class="unit">%</span>
@@ -390,7 +402,7 @@ body{
   <div class="readout device-status">
     <div class="device-row"><span class="name">ESP129</span><span class="status" id="status129">—</span></div>
     <div class="device-row"><span class="name">ESP124</span><span class="status" id="status125">—</span></div>
-    <div class="device-row"><span class="name">METER100</span><span class="status" id="status100">—</span></div>
+    <div class="device-row"><span class="name">METER</span><span class="status" id="status100">—</span></div>
   </div>
 </div>
 
@@ -726,6 +738,16 @@ const charts = [
   { key: 'pv', canvas: 'chartPv', current: 'chartPvCurrent', color: '#30e5ff', fill: 'rgba(48,229,255,.13)' },
   { key: 'inv', canvas: 'chartInv', current: 'chartInvCurrent', color: '#4cffb0', fill: 'rgba(76,255,176,.13)' }
 ];
+
+function toggleGlow(id, state, colorClass) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (state) {
+    el.classList.add(colorClass);
+  } else {
+    el.classList.remove('glow-cyan', 'glow-green', 'glow-red', 'glow-batt');
+  }
+}
 
 function openEnergyModal() { 
   const today = new Date();
@@ -1200,16 +1222,34 @@ async function fetchData() {
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
 
-    // --- 2ND FLOOR CARD DYNAMIC THEME LOGIC ---
+    // --- GLOW LOGIC ---
+    toggleGlow('cardPv', pvPower > 0, 'glow-cyan');
+    toggleGlow('cardInv', invPower > 0, 'glow-green');
+    toggleGlow('cardGrid', totalGrid > 0, 'glow-red');
+    
+    // Battery glows if charging or discharging (not idle)
+    const totalLoad = invPower + (invPower > 0 ? 100 : 0);
+    const battActive = Math.abs(pvPower - totalLoad) > 10;
+    toggleGlow('cardBattSoc', battActive, 'glow-batt');
+
+    // 2nd Floor Card Dynamic
     const floorCard = document.getElementById('floorGridCard');
     const floorLabel = document.getElementById('floorGridLabel');
     
     if (invPower !== null && invPower > 0) {
       floorCard.classList.add('inv-mode');
       floorLabel.textContent = '2ND FLR INV';
+      floorCard.classList.add('glow-green');
+      floorCard.classList.remove('glow-red');
+    } else if (floorGrid !== null && floorGrid > 0) {
+      floorCard.classList.remove('inv-mode');
+      floorLabel.textContent = '2ND FLR GRID';
+      floorCard.classList.add('glow-red');
+      floorCard.classList.remove('glow-green');
     } else {
       floorCard.classList.remove('inv-mode');
       floorLabel.textContent = '2ND FLR GRID';
+      floorCard.classList.remove('glow-green', 'glow-red');
     }
 
     // --- AC CARD DYNAMIC THEME & LINE LOGIC ---
@@ -1263,9 +1303,9 @@ async function fetchData() {
 
     // --- BATTERY FLOW LOGIC ---
     const battFlows = ['battFlow1', 'battFlow2', 'battFlow3'];
-    const battActive = (pvPower !== null && pvPower > 0) || (invPower !== null && invPower > 0);
+    const battActiveFlow = (pvPower !== null && pvPower > 0) || (invPower !== null && invPower > 0);
     
-    if (battActive) {
+    if (battActiveFlow) {
       const isCharging = (pvPower > invPower);
       battFlows.forEach(id => {
         const el = document.getElementById(id);
