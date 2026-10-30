@@ -1250,11 +1250,9 @@ function renderCharts(){
 function recordSample(key,value){
   const n=num(value);if(n===null)return;
   const a=history[key];
-  if(!a.length||a[a.length-1]!==n){
-    a.push(n);
-    if(a.length>MAX_POINTS)a.shift();
-    renderCharts();
-  }
+  a.push(n);
+  if(a.length>MAX_POINTS)a.shift();
+  renderCharts();
 }
 
 async function fetchHistory() {
