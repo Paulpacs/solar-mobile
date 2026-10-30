@@ -97,10 +97,10 @@ body{
 
 .ac-read { top: 37%; right: 5%; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a60; }
 .ac-read .label { color: #ffca9b; }
-/* AC Inverter Mode */
+
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
 .ac-read.inv-mode .label { color: #7dffca; }
-/* AC Grid Mode */
+
 .ac-read.grid-mode { border-color: var(--gold); box-shadow: 0 0 15px #ffc24760; }
 .ac-read.grid-mode .label { color: #ffda83; }
 
@@ -109,7 +109,7 @@ body{
 
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
-/* Floor Inverter Mode */
+
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .floor-grid.inv-mode .label { color: #7dffca; }
 
@@ -602,10 +602,15 @@ async function fetchData() {
     // --- AC CARD DYNAMIC THEME & LINE LOGIC ---
     const acCard = document.getElementById('acCard');
     const acValue = document.getElementById('acValue');
+    const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
     const invToAcFlow = document.getElementById('invToAcFlow');
     
     const isAcGrid = (floorGrid !== null && floorGrid > 1000);
     const isAcInverter = (invPower !== null && invPower > 1200);
+
+    // Reset all AC lines and classes
+    acFlows.forEach(id => document.getElementById(id).style.display = 'none');
+    invToAcFlow.style.display = 'none';
 
     if (isAcInverter) {
       acValue.textContent = 'ON';
@@ -614,11 +619,10 @@ async function fetchData() {
     } else if (isAcGrid) {
       acValue.textContent = 'ON';
       acCard.className = 'readout ac-read grid-mode';
-      invToAcFlow.style.display = 'none';
+      acFlows.forEach(id => document.getElementById(id).style.display = 'block');
     } else {
       acValue.textContent = 'OFF';
       acCard.className = 'readout ac-read';
-      invToAcFlow.style.display = 'none';
     }
 
     // --- PV FLOW LOGIC ---
