@@ -102,7 +102,18 @@ body{
 .weather-row .weather-value { color: #fff; font-size: 14px; text-align: right; flex-grow: 1;}
 .weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
 
-.ac-read { top: 37%; right: 5%; border-color: var(--off-gray); box-shadow: 0 0 15px #d1d5db30; cursor: pointer; transition: transform 0.1s; }
+.ac-read { 
+  bottom: 47%; 
+  right: 5%; 
+  min-width: 100px; 
+  border-color: var(--off-gray); 
+  box-shadow: 0 0 15px #d1d5db30; 
+  cursor: pointer; 
+  transition: transform 0.1s; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 2px;
+}
 .ac-read:active { transform: scale(0.96); }
 .ac-read .label { color: var(--off-gray); }
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
@@ -363,8 +374,10 @@ body{
   </div>
   
   <div class="readout ac-read" id="acCard" onclick="openAcModal()">
-    <span class="label" id="acLabel">WINDOW AC</span>
+    <span class="label" id="acLabel">AIRCON OFF</span>
     <span class="value" id="acValue">OFF</span>
+    <span style="font-size: 13px; font-weight: 900; color: #fff; margin-top: 2px;" id="acTemp">—°C</span>
+    <span style="font-size: 9px; font-weight: 700; color: #a6d6f2;" id="acHum">RH: —%</span>
   </div>
   
   <div class="readout inv-output" id="cardInv" onclick="openInvModal()">
@@ -487,7 +500,7 @@ body{
       <div style="font-size: 11px; color: #a6d6f2;">1.5HP Air Conditioner, non-inverter window type.<br>Rated power: 1240W</div>
     </div>
 
-    <div class="energy-grid" style="margin-bottom: 0;">
+    <div class="energy-grid" style="margin-bottom: 15px;">
       <div class="energy-card" id="acModalStatusCard">
         <span class="energy-label" id="acModalStatusLabel">STATUS</span>
         <span class="energy-val-today" id="acModalStatusValue" style="color: #fff;">OFF</span>
@@ -497,9 +510,21 @@ body{
         <span class="energy-val-today" id="acModalPowerValue" style="color: #fff;">—</span>
       </div>
     </div>
+
+    <!-- NEW: ENVIRONMENT DATA IN MODAL -->
+    <div class="energy-grid" style="margin-bottom: 0;">
+      <div class="energy-card" style="border-color: var(--gold); background: #04162beF;">
+        <span class="energy-label" style="color: var(--gold);">TEMP</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalAcTemp">— °C</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold); background: #04162beF;">
+        <span class="energy-label" style="color: var(--gold);">HUMIDITY</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalAcHum">— %</span>
+      </div>
+    </div>
   </div>
 </div>
-
+  
 <!-- Inverter Modal -->
 <div class="modal-overlay" id="invModal">
   <div class="modal-content" style="border-color: var(--green); box-shadow: 0 0 30px #4cffb030;">
@@ -1198,6 +1223,15 @@ async function fetchData() {
     show('soc', num(data.battery_soc), 0);
     show('battery', num(data.battery_voltage), 2);
 
+        // --- NEW: DHT11 DATA UPDATE ---
+    const dhtTemp = num(data.dht_temp);
+    const dhtHum = num(data.dht_hum);
+    
+    document.getElementById('acTemp').textContent = dhtTemp !== null ? dhtTemp.toFixed(1) + '°C' : '—°C';
+    document.getElementById('acHum').textContent = dhtHum !== null ? 'RH: ' + dhtHum.toFixed(1) + '%' : 'RH: —%';
+    document.getElementById('modalAcTemp').textContent = dhtTemp !== null ? dhtTemp.toFixed(1) + ' °C' : '— °C';
+    document.getElementById('modalAcHum').textContent = dhtHum !== null ? dhtHum.toFixed(1) + ' %' : '— %';
+
     show('mTodayPv', num(data.today_pv_kwh), 2, 'kWh');
     show('mYestPv', num(data.yesterday_pv_kwh), 2, 'kWh');
     show('mTodayInv', num(data.today_inverter_kwh), 2, 'kWh');
@@ -1285,6 +1319,14 @@ async function fetchData() {
       acValue.textContent = 'OFF';
       acCard.className = 'readout ac-read';
     }
+    
+    // --- NEW: UPDATE AIRCON LABEL TEXT ---
+    const acLabel = document.getElementById('acLabel');
+    if (acCard.classList.contains('inv-mode') || acCard.classList.contains('grid-mode')) {
+      acLabel.textContent = 'AIRCON ON';
+    } else {
+      acLabel.textContent = 'AIRCON OFF';
+    }
 
     // --- PV FLOW LOGIC ---
     const pvFlows = ['flow1', 'flow2', 'flow3'];
@@ -1294,7 +1336,7 @@ async function fetchData() {
       pvFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // --- MAIN GRID FLOW LOGIC ---
+        // --- MAIN GRID FLOW LOGIC ---
     const gridFlows = ['gridFlow1a', 'gridFlow1b', 'gridFlow1c'];
     if (totalGrid !== null && totalGrid > 0) {
       gridFlows.forEach(id => document.getElementById(id).style.display = 'block');
