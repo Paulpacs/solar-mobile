@@ -173,8 +173,11 @@ body{
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
 .graphs-container {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  height: 160px; flex-shrink: 0;
+  display: grid; 
+  grid-template-columns: 1fr; /* Changed from 1fr 1fr to full width */
+  gap: 8px;
+  height: 160px; 
+  flex-shrink: 0;
 }
 .graph-card{
   background: var(--card-bg); border:1px solid #15416a;
@@ -182,11 +185,7 @@ body{
 }
 .graph-head{display:flex;justify-content:space-between;margin-bottom:4px}
 .graph-title{font-size:9px;font-weight:800;color:#b6d9f6}
-.graph-current{font-size:12px;font-weight:900}
 .graph-card canvas{display:block;width:100%;flex:1;min-height:0;}
-
-.graph-pv .graph-current{color:var(--cyan)}
-.graph-inv .graph-current{color:var(--green)}
 
 /* --- MODAL STYLES --- */
 .modal-overlay {
@@ -415,19 +414,22 @@ body{
 </div>
 
 <div class="graphs-container">
-  <div class="graph-card graph-pv">
-    <div class="graph-head">
-      <div class="graph-title">PV POWER</div>
-      <div class="graph-current" id="chartPvCurrent">— W</div>
+  <div class="graph-card">
+    <div class="graph-head" style="display: flex; gap: 12px; align-items: center; margin-bottom: 4px;">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 5px var(--cyan);"></span>
+        <span class="graph-title">PV</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 5px var(--red);"></span>
+        <span class="graph-title">GRID</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green);"></span>
+        <span class="graph-title">INV</span>
+      </div>
     </div>
-    <canvas id="chartPv"></canvas>
-  </div>
-  <div class="graph-card graph-inv">
-    <div class="graph-head">
-      <div class="graph-title">INVERTER</div>
-      <div class="graph-current" id="chartInvCurrent">— W</div>
-    </div>
-    <canvas id="chartInv"></canvas>
+    <canvas id="chartAll"></canvas>
   </div>
 </div>
 
@@ -751,12 +753,8 @@ const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/conte
 const HISTORY_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/history.json';
 const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=9.312421&longitude=123.292598&current=temperature_2m,apparent_temperature,precipitation_probability,cloud_cover,wind_speed_10m,wind_direction_10m,shortwave_radiation&hourly=shortwave_radiation,cloud_cover&daily=sunrise,sunset&timezone=Asia%2FManila';
 
-const history = { pv: [], inv: [] };
-const MAX_POINTS = 21;
-const charts = [
-  { key: 'pv', canvas: 'chartPv', current: 'chartPvCurrent', color: '#30e5ff', fill: 'rgba(48,229,255,.13)' },
-  { key: 'inv', canvas: 'chartInv', current: 'chartInvCurrent', color: '#4cffb0', fill: 'rgba(76,255,176,.13)' }
-];
+const history = { pv: [], inv: [], grid: [] };
+const MAX_POINTS = 36;
 
 function toggleGlow(id, state, colorClass) {
   const el = document.getElementById(id);
@@ -1138,29 +1136,93 @@ function setDeviceStatus(id, val) {
   else { el.textContent = '—'; el.classList.remove('online'); }
 }
 
-function drawChart(c){
- const canvas=document.getElementById(c.canvas);if(!canvas)return;
- const rect=canvas.getBoundingClientRect();if(!rect.width)return;
- const dpr=window.devicePixelRatio||1;canvas.width=Math.round(rect.width*dpr);canvas.height=Math.round(rect.height*dpr);
- const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const w=rect.width,h=rect.height;
- ctx.clearRect(0,0,w,h);const pad=4,plotH=h-8,plotW=w-8;
- ctx.strokeStyle='rgba(126,177,216,.14)';ctx.lineWidth=1;
- for(let i=1;i<=3;i++){const y=pad+plotH*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
- const data=history[c.key];if(!data.length){ctx.fillStyle='#6d91b1';ctx.font='10px system-ui';ctx.fillText('Waiting…',8,h/2+3);return}
- const max=Math.max(100,...data)*1.08;
- const pts=data.map((v,i)=>({x:pad+(data.length===1?plotW/2:i*plotW/(MAX_POINTS-1)),y:pad+plotH-(Math.max(0,v)/max)*plotH}));
- if(pts.length>1){ctx.beginPath();ctx.moveTo(pts[0].x,h-pad);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,h-pad);ctx.closePath();ctx.fillStyle=c.fill;ctx.fill()}
- ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=c.color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';ctx.shadowColor=c.color;ctx.shadowBlur=6;ctx.stroke();ctx.shadowBlur=0;
- const last=pts[pts.length-1];ctx.beginPath();ctx.arc(last.x,last.y,3,0,Math.PI*2);ctx.fillStyle=c.color;ctx.fill();
+function drawCombinedChart() {
+  const canvas = document.getElementById('chartAll');
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.width) return;
+  
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+  
+  const pad = 4, plotH = h - 8, plotW = w - 8;
+  
+  // Draw grid lines
+  ctx.strokeStyle = 'rgba(126,177,216,.14)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 3; i++) {
+    const y = pad + plotH * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  // Config for the 3 lines
+  const series = [
+    { key: 'pv',   color: '#30e5ff', fill: 'rgba(48,229,255,.08)' },
+    { key: 'grid', color: '#ff2a2a', fill: 'rgba(255,42,42,.08)' },
+    { key: 'inv',  color: '#4cffb0', fill: 'rgba(76,255,176,.08)' }
+  ];
+
+  // Fixed Y-axis max of 2000W
+  const max = 2000;
+  let hasData = false;
+
+  // Draw each series
+  series.forEach(s => {
+    const data = history[s.key];
+    if (!data || !data.length) return;
+    hasData = true;
+
+    const pts = data.map((v, i) => ({
+      x: pad + plotW - ((data.length - 1 - i) * (plotW / (MAX_POINTS - 1))),
+      y: pad + plotH - (Math.min(max, Math.max(0, v)) / max) * plotH
+    }));
+
+    // Fill area under line
+    if (pts.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, h - pad);
+      pts.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(pts[pts.length - 1].x, h - pad);
+      ctx.closePath();
+      ctx.fillStyle = s.fill;
+      ctx.fill();
+    }
+
+    // Stroke the line
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.shadowColor = s.color;
+    ctx.shadowBlur = 6;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Draw dot at the end
+    const last = pts[pts.length - 1];
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = s.color;
+    ctx.fill();
+  });
+
+  if (!hasData) {
+    ctx.fillStyle = '#6d91b1';
+    ctx.font = '10px system-ui';
+    ctx.fillText('Waiting…', 8, h / 2 + 3);
+  }
 }
 
 function renderCharts(){
- charts.forEach(c=>{
-   const data=history[c.key],latest=data.length?data[data.length-1]:null;
-   const el=document.getElementById(c.current);
-   if(el)el.textContent=latest===null?'— W':Math.round(latest)+' W';
-   drawChart(c);
- });
+  drawCombinedChart();
 }
 
 function recordSample(key,value){
@@ -1186,6 +1248,9 @@ async function fetchHistory() {
     }
     if (data.inv && Array.isArray(data.inv)) {
       history.inv = data.inv.map(Number).filter(n => !isNaN(n));
+    }
+    if (data.grid && Array.isArray(data.grid)) {
+      history.grid = data.grid.map(Number).filter(n => !isNaN(n));
     }
 
     renderCharts();
@@ -1256,6 +1321,7 @@ async function fetchData() {
 
     if (pvPower !== null) recordSample('pv', pvPower);
     if (invPower !== null) recordSample('inv', invPower);
+    if (totalGrid !== null) recordSample('grid', totalGrid);
 
     // --- GLOW LOGIC ---
     toggleGlow('cardPv', pvPower > 0, 'glow-cyan');
