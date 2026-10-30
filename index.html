@@ -118,10 +118,12 @@ body{
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .floor-grid.inv-mode .label { color: #7dffca; }
 
-.total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a30; }
+.total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a30; cursor: pointer; transition: transform 0.1s; }
+.total-grid:active { transform: scale(0.96); }
 .total-grid .label { color: #ffca9b; }
 
-.grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--red); }
+.grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--red); cursor: pointer; transition: transform 0.1s; }
+.grid-volt:active { transform: scale(0.96); }
 .grid-volt .label { color: #ffca9b; }
 
 .batt-soc { bottom: 23%; right: 5%; border-color:var(--batt-green); box-shadow: 0 0 15px #a6ff7030; cursor: pointer; transition: transform 0.1s; }
@@ -348,7 +350,8 @@ body{
     <span class="value" id="invpower">—</span>
     <span class="unit">W</span>
   </div>
-  <div class="readout total-grid">
+  
+  <div class="readout total-grid" onclick="openGridModal()">
     <span class="label">TOTAL GRID</span>
     <span class="value" id="totalgrid">—</span>
     <span class="unit">W</span>
@@ -360,7 +363,7 @@ body{
     <span class="unit">W</span>
   </div>
 
-  <div class="readout grid-volt">
+  <div class="readout grid-volt" onclick="openGridModal()">
     <span class="label">GRID VOLTAGE</span>
     <span class="value" id="gridvoltage">—</span>
     <span class="unit">V</span>
@@ -531,7 +534,6 @@ body{
       <div style="font-size: 11px; color: #a6d6f2;">16S8P (36Ah) | 10A Active Balancer</div>
     </div>
 
-    <!-- Live Stats Grid (2x2) -->
     <div class="energy-grid" style="margin-bottom: 15px;">
       <div class="energy-card" style="border-color: var(--batt-green); background: #04162beF;">
         <span class="energy-label" style="color: var(--batt-green);">VOLTAGE</span>
@@ -551,7 +553,6 @@ body{
       </div>
     </div>
 
-    <!-- Diagnostic Text -->
     <div style="font-size: 12px; line-height: 1.6; color: #eaf7ff; background: #03132a; padding: 12px; border-radius: 8px; border: 1px solid #15416a;">
       <p style="margin: 0 0 8px 0;" id="modalBattStatusText">
         —
@@ -568,6 +569,58 @@ body{
         Chemistry: LiFePO4 (32650)<br>
         Configuration: 16S8P | 51.2V Nominal<br>
         Estimated Capacity: 36Ah (1.84 kWh)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grid Modal -->
+<div class="modal-overlay" id="gridModal">
+  <div class="modal-content" style="border-color: var(--red); box-shadow: 0 0 30px #ff2a2a30;">
+    <div class="modal-header" style="border-bottom: 1px solid #15416a;">
+      <div class="modal-title" style="color: var(--red);">GRID & HOUSE BREAKDOWN</div>
+      <button class="modal-close" onclick="closeGridModal()">✕</button>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 2px;">UTILITY GRID STATUS</div>
+      <div style="font-size: 11px; color: #a6d6f2;">Off-Grid Fallback Mode</div>
+    </div>
+
+    <!-- Live Stats Grid (2x2) -->
+    <div class="energy-grid" style="margin-bottom: 15px;">
+      <div class="energy-card" style="border-color: var(--red); background: #04162beF;">
+        <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalGridTotal">— W</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--red); background: #04162beF;">
+        <span class="energy-label" style="color: var(--red);">GRID VOLTAGE</span>
+        <span class="energy-val-today" id="modalGridVolt" style="color: #fff;">— V</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--red); background: #04162beF;">
+        <span class="energy-label" style="color: var(--red);">1ST FLR (KITCHEN)</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalGridFloor1">— W</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--red); background: #04162beF;">
+        <span class="energy-label" style="color: var(--red);">2ND FLR (AC/LIGHTS)</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalGridFloor2">— W</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Text -->
+    <div style="font-size: 12px; line-height: 1.6; color: #eaf7ff; background: #03132a; padding: 12px; border-radius: 8px; border: 1px solid #15416a;">
+      <p style="margin: 0 0 8px 0;" id="modalGridStatusText">
+        —
+      </p>
+      <p style="margin: 0 0 8px 0;" id="modalGridOffsetText">
+        —
+      </p>
+      
+      <div style="border-top: 1px solid #15416a; padding-top: 10px; margin-top: 10px; font-size: 11px; color: #a6d6f2;">
+        <strong style="color: #ffca9b; letter-spacing: 0.5px;">HOUSE POWER CONFIG:</strong><br>
+        1st Floor: Kitchen (Always on Grid)<br>
+        2nd Floor: AC & Lights (Solar/Grid Switchable)<br>
+        Nominal Voltage: 220V AC
       </div>
     </div>
   </div>
@@ -836,7 +889,6 @@ function openBattModal() {
   const statusText = document.getElementById('modalBattStatusText');
   const timeText = document.getElementById('modalBattTimeText');
 
-  // Math Logic
   const parasiticLoad = invPower > 0 ? 100 : 0;
   const totalLoad = invPower + parasiticLoad;
   const diff = pvPower - totalLoad;
@@ -845,7 +897,6 @@ function openBattModal() {
   const currentAh = (battSoc / 100) * totalCapacityAh;
 
   if (Math.abs(diff) < 10) {
-    // Idle
     currentEl.textContent = '0 A';
     currentEl.style.color = 'var(--off-gray)';
     flowEl.textContent = 'Idle';
@@ -857,7 +908,6 @@ function openBattModal() {
       
     timeText.innerHTML = `—`;
   } else if (diff > 0) {
-    // Charging
     const chargeAmps = diff / battVolt;
     currentEl.textContent = '+' + chargeAmps.toFixed(1) + ' A';
     currentEl.style.color = 'var(--green)';
@@ -873,7 +923,6 @@ function openBattModal() {
       timeText.innerHTML = `—`;
     }
   } else {
-    // Discharging
     const dischargeAmps = Math.abs(diff) / battVolt;
     currentEl.textContent = '-' + dischargeAmps.toFixed(1) + ' A';
     currentEl.style.color = 'var(--red)';
@@ -894,6 +943,60 @@ function openBattModal() {
 }
 function closeBattModal() {
   document.getElementById('battModal').classList.remove('active');
+}
+
+function openGridModal() {
+  const totalGridStr = document.getElementById('totalgrid').textContent;
+  const floorGridStr = document.getElementById('floorgrid').textContent;
+  const gridVoltStr = document.getElementById('gridvoltage').textContent;
+  const invPowerStr = document.getElementById('invpower').textContent;
+
+  const totalGrid = parseFloat(totalGridStr) || 0;
+  const floorGrid = parseFloat(floorGridStr) || 0;
+  const gridVolt = parseFloat(gridVoltStr) || 0;
+  const invPower = parseFloat(invPowerStr) || 0;
+
+  // Fill Live Cards
+  document.getElementById('modalGridTotal').textContent = (totalGridStr === '—' ? '0' : totalGridStr) + ' W';
+  document.getElementById('modalGridFloor2').textContent = (floorGridStr === '—' ? '0' : floorGridStr) + ' W';
+  
+  // Calculate 1st Floor (Total - 2nd Floor)
+  const floor1 = Math.max(0, totalGrid - floorGrid);
+  document.getElementById('modalGridFloor1').textContent = floor1 + ' W';
+
+  // Grid Voltage Validation
+  const voltEl = document.getElementById('modalGridVolt');
+  voltEl.textContent = (gridVoltStr === '—' ? '0' : gridVoltStr) + ' V';
+  if (gridVolt >= 210 && gridVolt <= 240) {
+    voltEl.style.color = 'var(--green)';
+  } else {
+    voltEl.style.color = 'var(--red)';
+  }
+
+  // Dynamic Text
+  const statusText = document.getElementById('modalGridStatusText');
+  const offsetText = document.getElementById('modalGridOffsetText');
+
+  if (totalGrid > 0) {
+    statusText.innerHTML = `The grid is supplying <strong>${Math.round(totalGrid)}W</strong> to the house.`;
+    statusText.style.color = '#eaf7ff';
+  } else {
+    statusText.innerHTML = `Grid is on standby. No power drawn from the utility.`;
+    statusText.style.color = 'var(--green)';
+  }
+
+  if (invPower > 0) {
+    offsetText.innerHTML = `Solar is offsetting the 2nd Floor by <strong>${Math.round(invPower)}W</strong>.`;
+    offsetText.style.color = '#eaf7ff';
+  } else {
+    offsetText.innerHTML = `Solar is currently inactive.`;
+    offsetText.style.color = '#a6d6f2';
+  }
+
+  document.getElementById('gridModal').classList.add('active');
+}
+function closeGridModal() {
+  document.getElementById('gridModal').classList.remove('active');
 }
 
 async function fetchWeather() {
