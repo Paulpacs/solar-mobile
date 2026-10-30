@@ -85,7 +85,8 @@ body{
 
 .pv-power { top: 16%; left: 45%; cursor: pointer; transition: transform 0.1s; }
 .pv-power:active { transform: scale(0.96); }
-.pv-volt { top: 16%; right: 7%; }
+.pv-volt { top: 16%; right: 7%; cursor: pointer; transition: transform 0.1s; }
+.pv-volt:active { transform: scale(0.96); }
 
 .weather-data { 
   top: 18%; left: 5%; min-width: 105px; 
@@ -320,7 +321,7 @@ body{
     <span class="value" id="pvpower">—</span>
     <span class="unit">W</span>
   </div>
-  <div class="readout pv-volt">
+  <div class="readout pv-volt" onclick="openPvModal()">
     <span class="label">PV VOLTAGE</span>
     <span class="value" id="pvvoltage">—</span>
     <span class="unit">V</span>
@@ -587,7 +588,6 @@ body{
       <div style="font-size: 11px; color: #a6d6f2;">Off-Grid Fallback Mode</div>
     </div>
 
-    <!-- Live Stats Grid (2x2) -->
     <div class="energy-grid" style="margin-bottom: 15px;">
       <div class="energy-card" style="border-color: var(--red); background: #04162beF;">
         <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
@@ -607,7 +607,6 @@ body{
       </div>
     </div>
 
-    <!-- Diagnostic Text -->
     <div style="font-size: 12px; line-height: 1.6; color: #eaf7ff; background: #03132a; padding: 12px; border-radius: 8px; border: 1px solid #15416a;">
       <p style="margin: 0 0 8px 0;" id="modalGridStatusText">
         —
@@ -956,15 +955,12 @@ function openGridModal() {
   const gridVolt = parseFloat(gridVoltStr) || 0;
   const invPower = parseFloat(invPowerStr) || 0;
 
-  // Fill Live Cards
   document.getElementById('modalGridTotal').textContent = (totalGridStr === '—' ? '0' : totalGridStr) + ' W';
   document.getElementById('modalGridFloor2').textContent = (floorGridStr === '—' ? '0' : floorGridStr) + ' W';
   
-  // Calculate 1st Floor (Total - 2nd Floor)
   const floor1 = Math.max(0, totalGrid - floorGrid);
   document.getElementById('modalGridFloor1').textContent = floor1 + ' W';
 
-  // Grid Voltage Validation
   const voltEl = document.getElementById('modalGridVolt');
   voltEl.textContent = (gridVoltStr === '—' ? '0' : gridVoltStr) + ' V';
   if (gridVolt >= 210 && gridVolt <= 240) {
@@ -973,7 +969,6 @@ function openGridModal() {
     voltEl.style.color = 'var(--red)';
   }
 
-  // Dynamic Text
   const statusText = document.getElementById('modalGridStatusText');
   const offsetText = document.getElementById('modalGridOffsetText');
 
