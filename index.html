@@ -176,12 +176,14 @@ body{
   display: grid; 
   grid-template-columns: 1fr; /* Changed from 1fr 1fr to full width */
   gap: 8px;
-  height: 140px; 
-  flex-shrink: 0;
+  height: 160px; 
+  margin-bottom: 10px; /* Give it space at the bottom */
+  padding-bottom: 5px; /* Prevents the canvas from bleeding off the edge */
 }
 .graph-card{
   background: var(--card-bg); border:1px solid #15416a;
   border-radius:10px; padding:8px; display: flex; flex-direction: column;
+  overflow: hidden;
 }
 .graph-head{display:flex;justify-content:space-between;margin-bottom:4px}
 .graph-title{font-size:9px;font-weight:800;color:#b6d9f6}
