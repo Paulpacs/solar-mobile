@@ -10,7 +10,7 @@
   --cyan:#30e5ff;
   --green:#4cffb0;
   --gold:#ffc247;
-  --red:#ff2a2a; 
+  --off-gray:#d1d5db;
   --batt-green:#a6ff70; 
   --text:#f4fbff;
   --card-bg: #03172beF;
@@ -95,8 +95,9 @@ body{
 .weather-row .weather-value { color: #fff; font-size: 14px; text-align: right; flex-grow: 1;}
 .weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
 
-.ac-read { top: 37%; right: 5%; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a60; }
-.ac-read .label { color: #ffca9b; }
+/* AC Card Styles */
+.ac-read { top: 37%; right: 5%; border-color: var(--off-gray); box-shadow: 0 0 15px #d1d5db30; }
+.ac-read .label { color: var(--off-gray); }
 
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
 .ac-read.inv-mode .label { color: #7dffca; }
@@ -109,7 +110,6 @@ body{
 
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
 .floor-grid .label { color: #ffda83; }
-
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .floor-grid.inv-mode .label { color: #7dffca; }
 
@@ -148,7 +148,7 @@ body{
   display: flex; flex-direction: column; justify-content: center;
 }
 .presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
-.presence-row .name { color: #d1d5db; }
+.presence-row .name { color: var(--off-gray); }
 .presence-row .status { color: #6b7280; }
 .presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
@@ -158,7 +158,7 @@ body{
   display: flex; flex-direction: column; justify-content: center;
 }
 .device-row { display: flex; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 2px; }
-.device-row .name { color: #d1d5db; margin-right: 8px;}
+.device-row .name { color: var(--off-gray); margin-right: 8px;}
 .device-row .status { color: #ef4444; }
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
@@ -216,10 +216,10 @@ body{
 .flow-line.cyan.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowRight 0.4s linear infinite; }
 .flow-line.cyan.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowLeft 0.4s linear infinite; }
 
-.flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowRight 0.4s linear infinite; }
-.flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
-.flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowLeft 0.4s linear infinite; }
-.flow-line.red.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowUp 0.4s linear infinite; }
+.flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowRight 0.4s linear infinite; }
+.flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowDown 0.4s linear infinite; }
+.flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowLeft 0.4s linear infinite; }
+.flow-line.red.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowUp 0.4s linear infinite; }
 
 .flow-line.batt-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowDown 0.4s linear infinite; }
 .flow-line.batt-green.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowUp 0.4s linear infinite; }
@@ -421,8 +421,8 @@ body{
         <span class="energy-val-today" id="mTodayFloor">—</span>
         <span class="energy-val-yest"><span id="yestLabel3">—</span> <span id="mYestFloor">—</span></span>
       </div>
-      <div class="energy-card" style="border-color: var(--red);">
-        <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">TOTAL GRID</span>
         <span class="dynamic-date" id="todayLabel4">—</span>
         <span class="energy-val-today" id="mTodayGrid">—</span>
         <span class="energy-val-yest"><span id="yestLabel4">—</span> <span id="mYestGrid">—</span></span>
