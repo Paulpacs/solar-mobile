@@ -489,6 +489,7 @@ body{
 
 <script>
 const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/live_data.json';
+const HISTORY_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/history.json';
 const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=9.312421&longitude=123.292598&current=temperature_2m,apparent_temperature,precipitation_probability,cloud_cover,wind_speed_10m,wind_direction_10m,shortwave_radiation&hourly=shortwave_radiation,cloud_cover&daily=sunrise,sunset&timezone=Asia%2FManila';
 
 const history = { pv: [], inv: [] };
@@ -621,6 +622,27 @@ function recordSample(key,value){
     a.push(n);
     if(a.length>MAX_POINTS)a.shift();
     renderCharts();
+  }
+}
+
+async function fetchHistory() {
+  try {
+    const res = await fetch(HISTORY_API_URL + '?t=' + new Date().getTime());
+    const apiData = await res.json();
+    
+    const decodedContent = atob(apiData.content.replace(/\s/g, ''));
+    const data = JSON.parse(decodedContent);
+
+    if (data.pv && Array.isArray(data.pv)) {
+      history.pv = data.pv.map(Number).filter(n => !isNaN(n));
+    }
+    if (data.inv && Array.isArray(data.inv)) {
+      history.inv = data.inv.map(Number).filter(n => !isNaN(n));
+    }
+
+    renderCharts();
+  } catch (e) {
+    console.error('History fetch failed:', e);
   }
 }
 
@@ -779,6 +801,7 @@ async function fetchData() {
   }
 }
 
+fetchHistory(); // <--- NEW: Pre-draws charts from history.json on load
 fetchData();
 fetchWeather(); // Initial weather fetch
 setInterval(fetchData, 60000);
