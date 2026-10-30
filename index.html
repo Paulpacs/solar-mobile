@@ -779,6 +779,9 @@ function openPvModal() {
   if (estPv === 0) {
     expEl.innerHTML = `Solar generation is currently offline (nighttime or heavy overcast).`;
     expEl.style.color = '#6b7280';
+  } else if (perfPct > 100) {
+    expEl.innerHTML = `Excellent! Panel output is <strong>exceeding</strong> weather estimates (likely due to cloud edge effects or cool temperatures).`;
+    expEl.style.color = 'var(--cyan)';
   } else if (perfPct >= 85) {
     expEl.innerHTML = `Performance is optimal. Clear skies are allowing maximum solar generation.`;
     expEl.style.color = 'var(--green)';
