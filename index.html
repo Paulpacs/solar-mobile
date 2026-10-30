@@ -91,7 +91,7 @@ body{
   top: 18%; left: 5%; min-width: 105px; 
   border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; 
   display: flex; flex-direction: column; gap: 4px;
-  cursor: pointer; /* Makes it look clickable */
+  cursor: pointer;
   transition: transform 0.1s;
 }
 .weather-data:active { transform: scale(0.96); }
@@ -101,7 +101,8 @@ body{
 .weather-row .weather-value { color: #fff; font-size: 14px; text-align: right; flex-grow: 1;}
 .weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
 
-.ac-read { top: 37%; right: 5%; border-color: var(--off-gray); box-shadow: 0 0 15px #d1d5db30; }
+.ac-read { top: 37%; right: 5%; border-color: var(--off-gray); box-shadow: 0 0 15px #d1d5db30; cursor: pointer; transition: transform 0.1s; }
+.ac-read:active { transform: scale(0.96); }
 .ac-read .label { color: var(--off-gray); }
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
 .ac-read.inv-mode .label { color: #7dffca; }
@@ -230,8 +231,12 @@ body{
 .flow-line.batt-green.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowRight 0.4s linear infinite; }
 .flow-line.batt-green.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowLeft 0.4s linear infinite; }
 
+/* INVERTER TO AC FLOW */
 .flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.4s linear infinite; }
 .flow-line.inv-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowDown 0.4s linear infinite; }
+
+/* GRID TO AC FLOW (Changed to flowDown) */
+.flow-line.red.vertical.down { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
 
 /* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
@@ -253,7 +258,7 @@ body{
 .batt-seg2 { bottom: 17%; right: 38%; width: 3px; height: 22%; }
 .batt-seg3 { bottom: 17%; right: 8%; width: 30%; height: 3px; }
 
-/* AC Segments (Ends at 40%) */
+/* AC Segments */
 .ac-seg1 { top: 64%; left: 25%; width: 15%; height: 3px; }
 .ac-seg2 { top: 40%; left: 40%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 40%; width: 53%; height: 3px; }
@@ -295,7 +300,7 @@ body{
   <div class="flow-line batt-green batt-seg3 horizontal" id="battFlow3"></div>
 
   <div class="flow-line red ac-seg1 horizontal" id="acFlow1"></div>
-  <div class="flow-line red ac-seg2 vertical up" id="acFlow2"></div>
+  <div class="flow-line red vertical down ac-seg2" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
   
   <!-- INVERTER TO 2ND FLOOR LINES -->
@@ -332,7 +337,7 @@ body{
     </div>
   </div>
   
-  <div class="readout ac-read" id="acCard">
+  <div class="readout ac-read" id="acCard" onclick="openAcModal()">
     <span class="label" id="acLabel">WINDOW AC</span>
     <span class="value" id="acValue">OFF</span>
   </div>
@@ -437,6 +442,32 @@ body{
         <strong style="color: #8beaff; letter-spacing: 0.5px;">PV ARRAY CONFIGURATION:</strong><br>
         3 PV at 595W each connected in series.<br>
         Total capacity is 1785W.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Window AC Modal -->
+<div class="modal-overlay" id="acModal">
+  <div class="modal-content" id="acModalContent">
+    <div class="modal-header" id="acModalHeader">
+      <div class="modal-title" id="acModalTitle">WINDOW AC</div>
+      <button class="modal-close" onclick="closeAcModal()">✕</button>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 4px;">SAMSUNG</div>
+      <div style="font-size: 11px; color: #a6d6f2;">1.5HP Air Conditioner, non-inverter window type.<br>Rated power: 1240W</div>
+    </div>
+
+    <div class="energy-grid" style="margin-bottom: 0;">
+      <div class="energy-card" id="acModalStatusCard">
+        <span class="energy-label" id="acModalStatusLabel">STATUS</span>
+        <span class="energy-val-today" id="acModalStatusValue" style="color: #fff;">OFF</span>
+      </div>
+      <div class="energy-card" id="acModalPowerCard">
+        <span class="energy-label" id="acModalPowerLabel">POWER SUPPLY</span>
+        <span class="energy-val-today" id="acModalPowerValue" style="color: #fff;">—</span>
       </div>
     </div>
   </div>
@@ -564,67 +595,113 @@ function openWeatherModal() { document.getElementById('weatherModal').classList.
 function closeWeatherModal() { document.getElementById('weatherModal').classList.remove('active'); }
 
 function openPvModal() { 
-  // 1. Get the current values from the DOM
   const pvPowerStr = document.getElementById('pvpower').textContent;
   const pvVoltStr = document.getElementById('pvvoltage').textContent;
   const estPvStr = document.getElementById('expectedPv').textContent;
 
-  // 2. Parse them safely into numbers
   const pvPower = parseFloat(pvPowerStr) || 0;
   const pvVolt = parseFloat(pvVoltStr) || 0;
   const estPv = parseFloat(estPvStr) || 0;
 
-  // 3. Update basic stats in the modal
   document.getElementById('modalPvPower').textContent = (pvPowerStr === '—' ? '0' : pvPowerStr) + ' W';
   document.getElementById('modalPvVoltage').textContent = (pvVoltStr === '—' ? '0' : pvVoltStr) + ' V';
 
-  // 4. Calculate Capacity % (Round to whole number)
   const capacityPct = Math.round((pvPower / 1785) * 100) || 0;
   document.getElementById('modalPvUsage').textContent = capacityPct + '%';
 
-  // 5. Calculate Performance vs Estimate
   let perfPct = 0;
   if (estPv > 0) {
     perfPct = Math.round((pvPower / estPv) * 100);
   }
   document.getElementById('modalPvPerf').textContent = perfPct + '%';
 
-  // 6. MPPT Logic (Receiving vs Rejecting based on 120V)
   const mpptEl = document.getElementById('modalMpptStatus');
   if (pvVolt < 120) {
     mpptEl.textContent = 'receiving';
-    mpptEl.style.color = 'var(--green)'; // Green for receiving
+    mpptEl.style.color = 'var(--green)';
   } else {
     mpptEl.textContent = 'rejecting';
-    mpptEl.style.color = 'var(--red)'; // Red for rejecting
+    mpptEl.style.color = 'var(--red)';
   }
 
-  // 7. Open the modal
   document.getElementById('pvModal').classList.add('active'); 
 }
 function closePvModal() { 
   document.getElementById('pvModal').classList.remove('active'); 
 }
 
-// Fetch Weather Data separately
+function openAcModal() {
+  const acCard = document.getElementById('acCard');
+  const acModalContent = document.getElementById('acModalContent');
+  const acModalTitle = document.getElementById('acModalTitle');
+  const statusCard = document.getElementById('acModalStatusCard');
+  const statusLabel = document.getElementById('acModalStatusLabel');
+  const statusValue = document.getElementById('acModalStatusValue');
+  const powerCard = document.getElementById('acModalPowerCard');
+  const powerLabel = document.getElementById('acModalPowerLabel');
+  const powerValue = document.getElementById('acModalPowerValue');
+  const header = document.getElementById('acModalHeader');
+
+  // Determine state from card classes
+  const isInv = acCard.classList.contains('inv-mode');
+  const isGrid = acCard.classList.contains('grid-mode');
+  const isOff = !isInv && !isGrid;
+
+  // Set Theme
+  let themeColor = 'var(--off-gray)';
+  let themeGlow = '#d1d5db30';
+  if (isInv) { themeColor = 'var(--green)'; themeGlow = '#4cffb060'; }
+  if (isGrid) { themeColor = 'var(--red)'; themeGlow = '#ff2a2a60'; }
+
+  acModalContent.style.borderColor = themeColor;
+  acModalContent.style.boxShadow = '0 0 30px ' + themeGlow;
+  acModalTitle.style.color = themeColor;
+  header.style.borderBottomColor = themeColor;
+
+  statusCard.style.borderColor = themeColor;
+  statusLabel.style.color = themeColor;
+  powerCard.style.borderColor = themeColor;
+  powerLabel.style.color = themeColor;
+
+  // Set Data
+  if (isOff) {
+    statusValue.textContent = 'OFF';
+    statusValue.style.color = themeColor;
+    powerValue.textContent = 'None';
+    powerValue.style.color = '#6b7280';
+  } else {
+    statusValue.textContent = 'ON';
+    statusValue.style.color = 'var(--green)';
+    if (isInv) {
+      powerValue.textContent = 'Solar';
+      powerValue.style.color = 'var(--green)';
+    } else {
+      powerValue.textContent = 'Grid';
+      powerValue.style.color = 'var(--red)';
+    }
+  }
+
+  document.getElementById('acModal').classList.add('active');
+}
+function closeAcModal() {
+  document.getElementById('acModal').classList.remove('active');
+}
+
 async function fetchWeather() {
   try {
     const res = await fetch(WEATHER_API_URL);
     const w = await res.json();
 
-    // Find current hour index
     const now = new Date();
-    // Create ISO string format matching the API (YYYY-MM-DDTHH:00)
     const currentHourStr = now.getFullYear() + '-' + 
       String(now.getMonth() + 1).padStart(2, '0') + '-' + 
       String(now.getDate()).padStart(2, '0') + 'T' + 
       String(now.getHours()).padStart(2, '0') + ':00';
       
     let currentIndex = w.hourly.time.indexOf(currentHourStr);
-    if (currentIndex === -1) currentIndex = 8; // Fallback
+    if (currentIndex === -1) currentIndex = 8;
     const nextIndex = currentIndex + 1;
 
-    // Format Wind Direction
     const deg = w.current.wind_direction_10m;
     const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     const windDirText = dirs[Math.round(deg / 45) % 8];
