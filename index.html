@@ -90,26 +90,26 @@ body{
   top: 18%; left: 5%; min-width: 105px; 
   border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; 
   display: flex; flex-direction: column; gap: 4px;
+  cursor: pointer; /* Makes it look clickable */
+  transition: transform 0.1s;
 }
+.weather-data:active { transform: scale(0.96); }
+
 .weather-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; }
 .weather-row .weather-label { color: #ffda83; font-size: 8px; letter-spacing: .5px; margin-right: 8px; }
 .weather-row .weather-value { color: #fff; font-size: 14px; text-align: right; flex-grow: 1;}
 .weather-row .weather-unit { color: #a6d6f2; font-size: 8px; margin-left: 2px;}
 
-/* AC Card Styles */
 .ac-read { top: 37%; right: 5%; border-color: var(--off-gray); box-shadow: 0 0 15px #d1d5db30; }
 .ac-read .label { color: var(--off-gray); }
-
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
 .ac-read.inv-mode .label { color: #7dffca; }
-
 .ac-read.grid-mode { border-color: var(--red); box-shadow: 0 0 15px #ff2a2a60; }
 .ac-read.grid-mode .label { color: #ffca9b; }
 
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-/* Grid Cards Red Theme */
 .floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--red); }
 .floor-grid .label { color: #ffca9b; }
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
@@ -180,6 +180,7 @@ body{
 .graph-pv .graph-current{color:var(--cyan)}
 .graph-inv .graph-current{color:var(--green)}
 
+/* --- MODAL STYLES --- */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
@@ -187,22 +188,22 @@ body{
 }
 .modal-overlay.active { display: flex; }
 .modal-content {
-  background: #03132a; border: 1px solid var(--batt-green);
+  background: #03132a; border: 1px solid var(--gold);
   border-radius: 15px; width: 90%; max-width: 400px; padding: 20px;
-  box-shadow: 0 0 30px #a6ff7030;
+  box-shadow: 0 0 30px #ffc24730;
 }
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 15px; border-bottom: 1px solid #15416a; padding-bottom: 10px;
 }
-.modal-title { font-size: 14px; font-weight: 850; color: var(--batt-green); letter-spacing: 1px; }
+.modal-title { font-size: 14px; font-weight: 850; color: var(--gold); letter-spacing: 1px; }
 .modal-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
 .energy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .energy-card {
-  background: #04162beF; border: 1px solid #15416a;
+  background: #04162beF; border: 1px solid var(--gold);
   border-radius: 8px; padding: 10px; text-align: center;
 }
-.energy-label { font-size: 9px; font-weight: 800; color: #8beaff; margin-bottom: 4px; display: block; }
+.energy-label { font-size: 9px; font-weight: 800; color: #ffda83; margin-bottom: 4px; display: block; }
 .energy-val-today { font-size: 16px; font-weight: 900; color: var(--green); display: block; }
 .energy-val-yest { font-size: 11px; font-weight: 700; color: #a6d6f2; display: block; margin-top: 4px; }
 .dynamic-date { font-size: 9px; color: #8beaff; font-weight: 800; display: block; margin-bottom: 2px; }
@@ -315,7 +316,9 @@ body{
     <span class="value" id="pvvoltage">—</span>
     <span class="unit">V</span>
   </div>
-  <div class="readout weather-data">
+  
+  <!-- CLICKABLE WEATHER CARD -->
+  <div class="readout weather-data" id="weatherCard" onclick="openWeatherModal()">
     <div class="weather-row">
       <span class="weather-label">Est PV</span>
       <span class="weather-value" id="expectedPv">—</span>
@@ -433,8 +436,60 @@ body{
   </div>
 </div>
 
+<!-- Weather Modal -->
+<div class="modal-overlay" id="weatherModal">
+  <div class="modal-content" style="border-color: var(--gold); box-shadow: 0 0 30px #ffc24730;">
+    <div class="modal-header">
+      <div class="modal-title" style="color: var(--gold);">WEATHER FORECAST</div>
+      <button class="modal-close" onclick="closeWeatherModal()">✕</button>
+    </div>
+    <div class="energy-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+      <!-- Current -->
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">TEMP</span>
+        <span class="energy-val-today" style="color: #fff;" id="wTemp">—</span>
+        <span class="energy-val-yest">Feels: <span id="wFeels">—</span></span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">WIND</span>
+        <span class="energy-val-today" style="color: #fff;" id="wWind">—</span>
+        <span class="energy-val-yest" id="wWindDir">—</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">RAIN</span>
+        <span class="energy-val-today" style="color: #fff;" id="wRain">—</span>
+        <span class="energy-val-yest">Chance</span>
+      </div>
+      
+      <!-- Next Hour -->
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">IRR NOW</span>
+        <span class="energy-val-today" style="color: var(--cyan);" id="wIrrNow">—</span>
+        <span class="energy-val-yest">W/m²</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">IRR NEXT HR</span>
+        <span class="energy-val-today" style="color: var(--cyan);" id="wIrrNext">—</span>
+        <span class="energy-val-yest">W/m²</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--gold);">
+        <span class="energy-label" style="color: var(--gold);">CLOUD NEXT</span>
+        <span class="energy-val-today" style="color: #fff;" id="wCloudNext">—</span>
+        <span class="energy-val-yest">%</span>
+      </div>
+      
+      <!-- Sun -->
+      <div class="energy-card" style="border-color: var(--gold); grid-column: span 3;">
+        <span class="energy-label" style="color: var(--gold);">SUNRISE / SUNSET</span>
+        <span class="energy-val-today" style="color: #ffda83;" id="wSun">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const GITHUB_API_URL = 'https://api.github.com/repos/Paulpacs/solar-mobile/contents/live_data.json';
+const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=9.312421&longitude=123.292598&current=temperature_2m,apparent_temperature,precipitation_probability,cloud_cover,wind_speed_10m,wind_direction_10m,shortwave_radiation&hourly=shortwave_radiation,cloud_cover&daily=sunrise,sunset&timezone=Asia%2FManila';
 
 const history = { pv: [], inv: [] };
 const MAX_POINTS = 21;
@@ -447,24 +502,63 @@ function openEnergyModal() {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-
   const options = { month: 'short', day: 'numeric' };
   const todayStr = today.toLocaleDateString('en-US', options).toUpperCase() + ':';
   const yestStr = yesterday.toLocaleDateString('en-US', options).toUpperCase() + ':';
-
   document.getElementById('todayLabel1').textContent = todayStr;
   document.getElementById('todayLabel2').textContent = todayStr;
   document.getElementById('todayLabel3').textContent = todayStr;
   document.getElementById('todayLabel4').textContent = todayStr;
-  
   document.getElementById('yestLabel1').textContent = yestStr;
   document.getElementById('yestLabel2').textContent = yestStr;
   document.getElementById('yestLabel3').textContent = yestStr;
   document.getElementById('yestLabel4').textContent = yestStr;
-
   document.getElementById('energyModal').classList.add('active'); 
 }
 function closeEnergyModal() { document.getElementById('energyModal').classList.remove('active'); }
+
+function openWeatherModal() { document.getElementById('weatherModal').classList.add('active'); }
+function closeWeatherModal() { document.getElementById('weatherModal').classList.remove('active'); }
+
+// Fetch Weather Data separately
+async function fetchWeather() {
+  try {
+    const res = await fetch(WEATHER_API_URL);
+    const w = await res.json();
+
+    // Find current hour index
+    const now = new Date();
+    // Create ISO string format matching the API (YYYY-MM-DDTHH:00)
+    const currentHourStr = now.getFullYear() + '-' + 
+      String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(now.getDate()).padStart(2, '0') + 'T' + 
+      String(now.getHours()).padStart(2, '0') + ':00';
+      
+    let currentIndex = w.hourly.time.indexOf(currentHourStr);
+    if (currentIndex === -1) currentIndex = 8; // Fallback
+    const nextIndex = currentIndex + 1;
+
+    // Format Wind Direction
+    const deg = w.current.wind_direction_10m;
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const windDirText = dirs[Math.round(deg / 45) % 8];
+
+    document.getElementById('wTemp').textContent = w.current.temperature_2m + '°C';
+    document.getElementById('wFeels').textContent = w.current.apparent_temperature + '°C';
+    document.getElementById('wWind').textContent = w.current.wind_speed_10m + ' km/h';
+    document.getElementById('wWindDir').textContent = windDirText + ' (' + deg + '°)';
+    document.getElementById('wRain').textContent = w.current.precipitation_probability + '%';
+    
+    document.getElementById('wIrrNow').textContent = w.current.shortwave_radiation;
+    document.getElementById('wIrrNext').textContent = w.hourly.shortwave_radiation[nextIndex];
+    document.getElementById('wCloudNext').textContent = w.hourly.cloud_cover[nextIndex];
+    
+    document.getElementById('wSun').textContent = w.daily.sunrise[0].split('T')[1] + ' / ' + w.daily.sunset[0].split('T')[1];
+
+  } catch (e) {
+    console.error('Weather fetch failed:', e);
+  }
+}
 
 function num(v){ 
   if(v===null||v===undefined||v===''||String(v).toLowerCase()==='nan') return null; 
@@ -610,7 +704,6 @@ async function fetchData() {
     const isAcGrid = (floorGrid !== null && floorGrid > 1000);
     const isAcInverter = (invPower !== null && invPower > 1200);
 
-    // Reset all AC lines and classes
     acFlows.forEach(id => document.getElementById(id).style.display = 'none');
     invToAcFlow.style.display = 'none';
 
@@ -687,7 +780,9 @@ async function fetchData() {
 }
 
 fetchData();
+fetchWeather(); // Initial weather fetch
 setInterval(fetchData, 60000);
+setInterval(fetchWeather, 600000); // Fetch weather every 10 mins
 window.addEventListener('resize', renderCharts);
 setTimeout(renderCharts, 500);
 
