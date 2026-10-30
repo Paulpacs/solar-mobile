@@ -234,9 +234,7 @@ body{
 /* INVERTER TO AC FLOW */
 .flow-line.inv-green.horizontal { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowLeft 0.4s linear infinite; }
 .flow-line.inv-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowDown 0.4s linear infinite; }
-
-/* GRID TO AC FLOW (Changed to flowDown) */
-.flow-line.red.vertical.down { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
+.flow-line.inv-green.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--green) 2px, var(--green) 6px); box-shadow: 0 0 8px var(--green); animation: flowUp 0.4s linear infinite; }
 
 /* PV Segments */
 .seg1 { top: 24%; left: 51%; width: 3px; height: 12%; }
@@ -300,7 +298,7 @@ body{
   <div class="flow-line batt-green batt-seg3 horizontal" id="battFlow3"></div>
 
   <div class="flow-line red ac-seg1 horizontal" id="acFlow1"></div>
-  <div class="flow-line red vertical down ac-seg2" id="acFlow2"></div>
+  <div class="flow-line red vertical up ac-seg2" id="acFlow2"></div>
   <div class="flow-line red ac-seg3 horizontal" id="acFlow3"></div>
   
   <!-- INVERTER TO 2ND FLOOR LINES -->
@@ -309,7 +307,7 @@ body{
   <div class="flow-line inv-green horizontal reverse inv-seg3" id="invFlow3"></div>
 
   <!-- INVERTER TO AC LINE -->
-  <div class="flow-line inv-green vertical inv-to-ac" id="invToAcFlow"></div>
+  <div class="flow-line inv-green vertical up inv-to-ac" id="invToAcFlow"></div>
 
   <!-- CARDS -->
   <div class="readout pv-power" onclick="openPvModal()">
