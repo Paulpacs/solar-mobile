@@ -835,7 +835,10 @@ function openPvModal() {
   }
 
   const mpptEl = document.getElementById('modalMpptStatus');
-  if (pvVolt < 120) {
+  if (pvVolt === 0) {
+    mpptEl.textContent = 'getting no';
+    mpptEl.style.color = 'var(--off-gray)';
+  } else if (pvVolt < 120) {
     mpptEl.textContent = 'receiving';
     mpptEl.style.color = 'var(--green)';
   } else {
