@@ -140,17 +140,17 @@ body{
   bottom: 1%; right: 5%;
   width: 80px; padding: 6px 4px;
   background: var(--card-bg);
-  border: 1px solid var(--batt-green);
+  border: 1px solid var(--off-gray);
   border-radius: 8px;
-  color: var(--batt-green);
+  color: var(--off-gray);
   font-size: 8px; font-weight: 800;
   letter-spacing: 0.5px;
   text-align: center; line-height: 1.2;
   cursor: pointer;
-  box-shadow: 0 0 10px #a6ff7020;
+  box-shadow: 0 0 10px #d1d5db20;
   z-index: 10;
 }
-.btn-energy:active { background: #a6ff7030; }
+.btn-energy:active { background: #d1d5db30; }
 
 .presence { 
   bottom: 1%; left: 7%; width: 28%; height: 65px; 
@@ -196,15 +196,15 @@ body{
 }
 .modal-overlay.active { display: flex; }
 .modal-content {
-  background: #03132a; border: 1px solid var(--gold);
+  background: #03132a; border: 1px solid var(--off-gray);
   border-radius: 15px; width: 90%; max-width: 400px; padding: 20px;
-  box-shadow: 0 0 30px #ffc24730;
+  box-shadow: 0 0 30px #d1d5db30;
 }
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 15px; border-bottom: 1px solid #15416a; padding-bottom: 10px;
 }
-.modal-title { font-size: 14px; font-weight: 850; color: var(--gold); letter-spacing: 1px; }
+.modal-title { font-size: 14px; font-weight: 850; color: var(--off-gray); letter-spacing: 1px; }
 .modal-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
 .energy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .energy-card {
