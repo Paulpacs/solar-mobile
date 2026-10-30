@@ -83,7 +83,8 @@ body{
 .readout .value{display:block;font-size:16px;font-weight:900;line-height:1.1}
 .readout .unit{font-size:8px;color:#a6d6f2}
 
-.pv-power { top: 16%; left: 45%; }
+.pv-power { top: 16%; left: 45%; cursor: pointer; transition: transform 0.1s; }
+.pv-power:active { transform: scale(0.96); }
 .pv-volt { top: 16%; right: 7%; }
 
 .weather-data { 
@@ -306,7 +307,7 @@ body{
   <div class="flow-line inv-green vertical inv-to-ac" id="invToAcFlow"></div>
 
   <!-- CARDS -->
-  <div class="readout pv-power">
+  <div class="readout pv-power" onclick="openPvModal()">
     <span class="label">PV POWER</span>
     <span class="value" id="pvpower">—</span>
     <span class="unit">W</span>
@@ -397,6 +398,47 @@ body{
       <div class="graph-current" id="chartInvCurrent">— W</div>
     </div>
     <canvas id="chartInv"></canvas>
+  </div>
+</div>
+
+<!-- PV Details Modal -->
+<div class="modal-overlay" id="pvModal">
+  <div class="modal-content" style="border-color: var(--cyan); box-shadow: 0 0 30px #30e5ff30;">
+    <div class="modal-header" style="border-bottom: 1px solid #145080;">
+      <div class="modal-title" style="color: var(--cyan);">PV SYSTEM STATUS</div>
+      <button class="modal-close" onclick="closePvModal()">✕</button>
+    </div>
+    
+    <!-- Live Stats Grid -->
+    <div class="energy-grid" style="margin-bottom: 15px;">
+      <div class="energy-card" style="border-color: var(--cyan); background: #04162beF;">
+        <span class="energy-label" style="color: var(--cyan);">PV POWER</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalPvPower">— W</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--cyan); background: #04162beF;">
+        <span class="energy-label" style="color: var(--cyan);">PV VOLTAGE</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalPvVoltage">— V</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Text -->
+    <div style="font-size: 12px; line-height: 1.6; color: #eaf7ff; background: #03132a; padding: 12px; border-radius: 8px; border: 1px solid #15416a;">
+      <p style="margin: 0 0 8px 0;">
+        You are using <strong style="color: var(--cyan);" id="modalPvUsage">—%</strong> of your PV capacity.
+      </p>
+      <p style="margin: 0 0 8px 0;">
+        PV performance is <strong style="color: var(--cyan);" id="modalPvPerf">—%</strong> against projected PV estimates.
+      </p>
+      <p style="margin: 0 0 12px 0;">
+        MPPT is <strong id="modalMpptStatus" style="color: var(--green);">—</strong> power from PV Array.
+      </p>
+      
+      <div style="border-top: 1px solid #15416a; padding-top: 10px; margin-top: 10px; font-size: 11px; color: #a6d6f2;">
+        <strong style="color: #8beaff; letter-spacing: 0.5px;">PV ARRAY CONFIGURATION:</strong><br>
+        3 PV at 595W each connected in series.<br>
+        Total capacity is 1785W.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -520,6 +562,49 @@ function closeEnergyModal() { document.getElementById('energyModal').classList.r
 
 function openWeatherModal() { document.getElementById('weatherModal').classList.add('active'); }
 function closeWeatherModal() { document.getElementById('weatherModal').classList.remove('active'); }
+
+function openPvModal() { 
+  // 1. Get the current values from the DOM
+  const pvPowerStr = document.getElementById('pvpower').textContent;
+  const pvVoltStr = document.getElementById('pvvoltage').textContent;
+  const estPvStr = document.getElementById('expectedPv').textContent;
+
+  // 2. Parse them safely into numbers
+  const pvPower = parseFloat(pvPowerStr) || 0;
+  const pvVolt = parseFloat(pvVoltStr) || 0;
+  const estPv = parseFloat(estPvStr) || 0;
+
+  // 3. Update basic stats in the modal
+  document.getElementById('modalPvPower').textContent = (pvPowerStr === '—' ? '0' : pvPowerStr) + ' W';
+  document.getElementById('modalPvVoltage').textContent = (pvVoltStr === '—' ? '0' : pvVoltStr) + ' V';
+
+  // 4. Calculate Capacity % (Round to whole number)
+  const capacityPct = Math.round((pvPower / 1785) * 100) || 0;
+  document.getElementById('modalPvUsage').textContent = capacityPct + '%';
+
+  // 5. Calculate Performance vs Estimate
+  let perfPct = 0;
+  if (estPv > 0) {
+    perfPct = Math.round((pvPower / estPv) * 100);
+  }
+  document.getElementById('modalPvPerf').textContent = perfPct + '%';
+
+  // 6. MPPT Logic (Receiving vs Rejecting based on 120V)
+  const mpptEl = document.getElementById('modalMpptStatus');
+  if (pvVolt < 120) {
+    mpptEl.textContent = 'receiving';
+    mpptEl.style.color = 'var(--green)'; // Green for receiving
+  } else {
+    mpptEl.textContent = 'rejecting';
+    mpptEl.style.color = 'var(--red)'; // Red for rejecting
+  }
+
+  // 7. Open the modal
+  document.getElementById('pvModal').classList.add('active'); 
+}
+function closePvModal() { 
+  document.getElementById('pvModal').classList.remove('active'); 
+}
 
 // Fetch Weather Data separately
 async function fetchWeather() {
@@ -801,7 +886,7 @@ async function fetchData() {
   }
 }
 
-fetchHistory(); // <--- NEW: Pre-draws charts from history.json on load
+fetchHistory(); // Pre-draws charts from history.json on load
 fetchData();
 fetchWeather(); // Initial weather fetch
 setInterval(fetchData, 60000);
