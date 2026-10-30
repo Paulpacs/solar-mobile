@@ -124,10 +124,12 @@ body{
 .grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--red); }
 .grid-volt .label { color: #ffca9b; }
 
-.batt-soc { bottom: 23%; right: 5%; border-color:var(--batt-green); box-shadow: 0 0 15px #a6ff7030; }
+.batt-soc { bottom: 23%; right: 5%; border-color:var(--batt-green); box-shadow: 0 0 15px #a6ff7030; cursor: pointer; transition: transform 0.1s; }
+.batt-soc:active { transform: scale(0.96); }
 .batt-soc .label { color: #caff9c; }
 
-.batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:var(--batt-green); }
+.batt-volt { bottom: 10%; right: 5%; min-width: 80px; border-color:var(--batt-green); cursor: pointer; transition: transform 0.1s; }
+.batt-volt:active { transform: scale(0.96); }
 .batt-volt .label { color: #caff9c; }
 
 .btn-energy {
@@ -363,12 +365,12 @@ body{
     <span class="value" id="gridvoltage">—</span>
     <span class="unit">V</span>
   </div>
-  <div class="readout batt-soc">
+  <div class="readout batt-soc" onclick="openBattModal()">
     <span class="label">BATTERY SOC</span>
     <span class="value" id="soc">—</span>
     <span class="unit">%</span>
   </div>
-  <div class="readout batt-volt">
+  <div class="readout batt-volt" onclick="openBattModal()">
     <span class="label">BATTERY VOLT</span>
     <span class="value" id="battery">—</span>
     <span class="unit">V</span>
@@ -511,6 +513,61 @@ body{
         Max PV Input: 8000W<br>
         MPPT Range: 60–500V<br>
         Battery System: 48V DC
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Battery Modal -->
+<div class="modal-overlay" id="battModal">
+  <div class="modal-content" style="border-color: var(--batt-green); box-shadow: 0 0 30px #a6ff7030;">
+    <div class="modal-header" style="border-bottom: 1px solid #15416a;">
+      <div class="modal-title" style="color: var(--batt-green);">BATTERY STATUS</div>
+      <button class="modal-close" onclick="closeBattModal()">✕</button>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 2px;">LIFEPO4 BATTERY BANK</div>
+      <div style="font-size: 11px; color: #a6d6f2;">16S8P (36Ah) | 10A Active Balancer</div>
+    </div>
+
+    <!-- Live Stats Grid (2x2) -->
+    <div class="energy-grid" style="margin-bottom: 15px;">
+      <div class="energy-card" style="border-color: var(--batt-green); background: #04162beF;">
+        <span class="energy-label" style="color: var(--batt-green);">VOLTAGE</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalBattVolt">— V</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--batt-green); background: #04162beF;">
+        <span class="energy-label" style="color: var(--batt-green);">STATE OF CHARGE</span>
+        <span class="energy-val-today" style="color: #fff;" id="modalBattSoc">— %</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--batt-green); background: #04162beF;">
+        <span class="energy-label" style="color: var(--batt-green);">CURRENT</span>
+        <span class="energy-val-today" id="modalBattCurrent" style="color: #fff;">— A</span>
+      </div>
+      <div class="energy-card" style="border-color: var(--batt-green); background: #04162beF;">
+        <span class="energy-label" style="color: var(--batt-green);">POWER FLOW</span>
+        <span class="energy-val-today" id="modalBattFlow" style="color: #fff; font-size: 14px;">—</span>
+      </div>
+    </div>
+
+    <!-- Diagnostic Text -->
+    <div style="font-size: 12px; line-height: 1.6; color: #eaf7ff; background: #03132a; padding: 12px; border-radius: 8px; border: 1px solid #15416a;">
+      <p style="margin: 0 0 8px 0;" id="modalBattStatusText">
+        —
+      </p>
+      <p style="margin: 0 0 8px 0;" id="modalBattTimeText">
+        —
+      </p>
+      <p style="margin: 0 0 12px 0;">
+        Active balancer (10A) keeping cells in sync.
+      </p>
+      
+      <div style="border-top: 1px solid #15416a; padding-top: 10px; margin-top: 10px; font-size: 11px; color: #a6d6f2;">
+        <strong style="color: #caff9c; letter-spacing: 0.5px;">BATTERY SPECS:</strong><br>
+        Chemistry: LiFePO4 (32650)<br>
+        Configuration: 16S8P | 51.2V Nominal<br>
+        Estimated Capacity: 36Ah (1.84 kWh)
       </div>
     </div>
   </div>
@@ -736,10 +793,8 @@ function openInvModal() {
   const pvPower = parseFloat(pvPowerStr) || 0;
   const pvVolt = parseFloat(pvVoltStr) || 0;
 
-  // Basic stats
   document.getElementById('modalInvPower').textContent = (invPowerStr === '—' ? '0' : invPowerStr) + ' W';
 
-  // Capacity % calculations
   const loadPct = Math.round((invPower / 6500) * 100) || 0;
   const pvCapacityPct = Math.round((pvPower / 8000) * 100) || 0;
 
@@ -747,7 +802,6 @@ function openInvModal() {
   document.getElementById('modalInvCapacity').textContent = loadPct + '%';
   document.getElementById('modalInvPvCapacity').textContent = pvCapacityPct + '%';
 
-  // MPPT Voltage Check (60V - 500V)
   const mpptEl = document.getElementById('modalInvMpptStatus');
   mpptEl.textContent = (pvVoltStr === '—' ? '0' : pvVoltStr) + ' V';
   
@@ -761,6 +815,85 @@ function openInvModal() {
 }
 function closeInvModal() {
   document.getElementById('invModal').classList.remove('active');
+}
+
+function openBattModal() {
+  const battVoltStr = document.getElementById('battery').textContent;
+  const battSocStr = document.getElementById('soc').textContent;
+  const invPowerStr = document.getElementById('invpower').textContent;
+  const pvPowerStr = document.getElementById('pvpower').textContent;
+
+  const battVolt = parseFloat(battVoltStr) || 0;
+  const battSoc = parseFloat(battSocStr) || 0;
+  const invPower = parseFloat(invPowerStr) || 0;
+  const pvPower = parseFloat(pvPowerStr) || 0;
+
+  document.getElementById('modalBattVolt').textContent = (battVoltStr === '—' ? '0' : battVoltStr) + ' V';
+  document.getElementById('modalBattSoc').textContent = (battSocStr === '—' ? '0' : battSocStr) + ' %';
+
+  const currentEl = document.getElementById('modalBattCurrent');
+  const flowEl = document.getElementById('modalBattFlow');
+  const statusText = document.getElementById('modalBattStatusText');
+  const timeText = document.getElementById('modalBattTimeText');
+
+  // Math Logic
+  const parasiticLoad = invPower > 0 ? 100 : 0;
+  const totalLoad = invPower + parasiticLoad;
+  const diff = pvPower - totalLoad;
+
+  const totalCapacityAh = 36; 
+  const currentAh = (battSoc / 100) * totalCapacityAh;
+
+  if (Math.abs(diff) < 10) {
+    // Idle
+    currentEl.textContent = '0 A';
+    currentEl.style.color = 'var(--off-gray)';
+    flowEl.textContent = 'Idle';
+    flowEl.style.color = 'var(--off-gray)';
+    
+    statusText.innerHTML = invPower > 0 
+      ? `Inverter is ON. Total load: <strong>${Math.round(totalLoad)}W</strong> (Includes 100W parasitic). Battery is floating.`
+      : `Inverter is OFF. Battery is idle.`;
+      
+    timeText.innerHTML = `—`;
+  } else if (diff > 0) {
+    // Charging
+    const chargeAmps = diff / battVolt;
+    currentEl.textContent = '+' + chargeAmps.toFixed(1) + ' A';
+    currentEl.style.color = 'var(--green)';
+    flowEl.textContent = `Charging ${Math.round(diff)}W`;
+    flowEl.style.color = 'var(--green)';
+    
+    statusText.innerHTML = `Inverter is ON. Total load: <strong>${Math.round(totalLoad)}W</strong> (Includes 100W parasitic). Battery is charging at <strong>${Math.round(diff)}W</strong>.`;
+    
+    if (chargeAmps > 0) {
+      const hrs = (totalCapacityAh - currentAh) / chargeAmps;
+      timeText.innerHTML = `Estimated time to full: <strong>${hrs.toFixed(1)} hours</strong>.`;
+    } else {
+      timeText.innerHTML = `—`;
+    }
+  } else {
+    // Discharging
+    const dischargeAmps = Math.abs(diff) / battVolt;
+    currentEl.textContent = '-' + dischargeAmps.toFixed(1) + ' A';
+    currentEl.style.color = 'var(--red)';
+    flowEl.textContent = `Discharging ${Math.round(Math.abs(diff))}W`;
+    flowEl.style.color = 'var(--red)';
+    
+    statusText.innerHTML = `Inverter is ON. Total load: <strong>${Math.round(totalLoad)}W</strong> (Includes 100W parasitic). Battery is discharging at <strong>${Math.round(Math.abs(diff))}W</strong>.`;
+    
+    if (dischargeAmps > 0) {
+      const hrs = currentAh / dischargeAmps;
+      timeText.innerHTML = `Estimated time to empty: <strong>${hrs.toFixed(1)} hours</strong>.`;
+    } else {
+      timeText.innerHTML = `—`;
+    }
+  }
+
+  document.getElementById('battModal').classList.add('active');
+}
+function closeBattModal() {
+  document.getElementById('battModal').classList.remove('active');
 }
 
 async function fetchWeather() {
