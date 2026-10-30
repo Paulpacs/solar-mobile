@@ -1316,20 +1316,20 @@ async function fetchData() {
 
     // Update New Values inside the card (Temp & Hum)
     if (acValue) {
-      const tempStr = dhtTemp !== null ? Math.round(dhtTemp) + '°C' : '—°C';
+      const tempStr = dhtTemp !== null ? dhtTemp.toFixed(1) + '°C' : '—°C';
       const humStr = dhtHum !== null ? Math.round(dhtHum) + '%' : '—%';
       acValue.textContent = `${tempStr} H: ${humStr}`;
     }
 
     // Update New Values inside the popup (Temp & Hum)
     if (dhtTemp !== null) {
-      document.getElementById('acModalTempValue').textContent = Math.round(dhtTemp) + ' °C';
+      document.getElementById('acModalTempValue').textContent = dhtTemp.toFixed(1) + ' °C';
     } else {
       document.getElementById('acModalTempValue').textContent = '— °C';
     }
     
     if (dhtHum !== null) {
-      document.getElementById('acModalHumValue').textContent = Math.round(dhtHum) + ' %';
+      document.getElementById('acModalHumValue').textContent = dhtHum.toFixed(1) + ' %';
     } else {
       document.getElementById('acModalHumValue').textContent = '— %';
     }
