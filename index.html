@@ -10,6 +10,7 @@
   --cyan:#30e5ff;
   --green:#4cffb0;
   --gold:#ffc247;
+  --red:#ff2a2a; 
   --off-gray:#d1d5db;
   --batt-green:#a6ff70; 
   --text:#f4fbff;
@@ -216,10 +217,11 @@ body{
 .flow-line.cyan.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowRight 0.4s linear infinite; }
 .flow-line.cyan.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowLeft 0.4s linear infinite; }
 
-.flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowRight 0.4s linear infinite; }
-.flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowDown 0.4s linear infinite; }
-.flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowLeft 0.4s linear infinite; }
-.flow-line.red.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--gold) 2px, var(--gold) 6px); box-shadow: 0 0 8px var(--gold); animation: flowUp 0.4s linear infinite; }
+/* Reverted back to Red */
+.flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowRight 0.4s linear infinite; }
+.flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
+.flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowLeft 0.4s linear infinite; }
+.flow-line.red.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowUp 0.4s linear infinite; }
 
 .flow-line.batt-green.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowDown 0.4s linear infinite; }
 .flow-line.batt-green.vertical.up { background: repeating-linear-gradient(to top, transparent, transparent 2px, var(--batt-green) 2px, var(--batt-green) 6px); box-shadow: 0 0 8px var(--batt-green); animation: flowUp 0.4s linear infinite; }
@@ -249,7 +251,7 @@ body{
 .batt-seg2 { bottom: 17%; right: 38%; width: 3px; height: 22%; }
 .batt-seg3 { bottom: 17%; right: 8%; width: 30%; height: 3px; }
 
-/* AC Segments (Adjusted to end at 40%) */
+/* AC Segments (Ends at 40%) */
 .ac-seg1 { top: 64%; left: 25%; width: 15%; height: 3px; }
 .ac-seg2 { top: 40%; left: 40%; width: 3px; height: 24%; }
 .ac-seg3 { top: 40%; left: 40%; width: 53%; height: 3px; }
