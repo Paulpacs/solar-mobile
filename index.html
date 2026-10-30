@@ -437,6 +437,9 @@ body{
       <p style="margin: 0 0 8px 0;">
         PV performance is <strong style="color: var(--cyan);" id="modalPvPerf">—%</strong> against projected PV estimates.
       </p>
+      <p style="margin: 0 0 8px 0; font-size: 11px; color: #a6d6f2; line-height: 1.4;" id="modalPvExplanation">
+        —
+      </p>
       <p style="margin: 0 0 12px 0;">
         MPPT is <strong id="modalMpptStatus" style="color: var(--green);">—</strong> power from PV Array.
       </p>
@@ -750,10 +753,15 @@ function openPvModal() {
   const pvPowerStr = document.getElementById('pvpower').textContent;
   const pvVoltStr = document.getElementById('pvvoltage').textContent;
   const estPvStr = document.getElementById('expectedPv').textContent;
+  
+  const cloudStr = document.getElementById('cloudCover').textContent;
+  const rainStr = document.getElementById('wRain').textContent; 
 
   const pvPower = parseFloat(pvPowerStr) || 0;
   const pvVolt = parseFloat(pvVoltStr) || 0;
   const estPv = parseFloat(estPvStr) || 0;
+  const cloud = parseFloat(cloudStr) || 0;
+  const rain = parseFloat(rainStr) || 0;
 
   document.getElementById('modalPvPower').textContent = (pvPowerStr === '—' ? '0' : pvPowerStr) + ' W';
   document.getElementById('modalPvVoltage').textContent = (pvVoltStr === '—' ? '0' : pvVoltStr) + ' V';
@@ -766,6 +774,21 @@ function openPvModal() {
     perfPct = Math.round((pvPower / estPv) * 100);
   }
   document.getElementById('modalPvPerf').textContent = perfPct + '%';
+
+  const expEl = document.getElementById('modalPvExplanation');
+  if (estPv === 0) {
+    expEl.innerHTML = `Solar generation is currently offline (nighttime or heavy overcast).`;
+    expEl.style.color = '#6b7280';
+  } else if (perfPct >= 85) {
+    expEl.innerHTML = `Performance is optimal. Clear skies are allowing maximum solar generation.`;
+    expEl.style.color = 'var(--green)';
+  } else if (perfPct >= 50) {
+    expEl.innerHTML = `Output is moderately reduced. Cloud cover is at <strong>${cloud}%</strong>, limiting solar harvest.`;
+    expEl.style.color = 'var(--gold)';
+  } else {
+    expEl.innerHTML = `Output is heavily reduced. Cloud cover (<strong>${cloud}%</strong>) and a <strong>${rain}%</strong> chance of rain are blocking the sun.`;
+    expEl.style.color = 'var(--red)';
+  }
 
   const mpptEl = document.getElementById('modalMpptStatus');
   if (pvVolt < 120) {
