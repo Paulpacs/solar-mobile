@@ -103,22 +103,23 @@ body{
 .ac-read.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb060; }
 .ac-read.inv-mode .label { color: #7dffca; }
 
-.ac-read.grid-mode { border-color: var(--gold); box-shadow: 0 0 15px #ffc24760; }
-.ac-read.grid-mode .label { color: #ffda83; }
+.ac-read.grid-mode { border-color: var(--red); box-shadow: 0 0 15px #ff2a2a60; }
+.ac-read.grid-mode .label { color: #ffca9b; }
 
 .inv-output { bottom: 36%; right: 5%; border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .inv-output .label { color: #7dffca; }
 
-.floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--gold); }
-.floor-grid .label { color: #ffda83; }
+/* Grid Cards Red Theme */
+.floor-grid { top: 59%; left: 5%; min-width: 80px; border-color: var(--red); }
+.floor-grid .label { color: #ffca9b; }
 .floor-grid.inv-mode { border-color: var(--green); box-shadow: 0 0 15px #4cffb030; }
 .floor-grid.inv-mode .label { color: #7dffca; }
 
-.total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--gold); box-shadow: 0 0 15px #ffc24730; }
-.total-grid .label { color: #ffda83; }
+.total-grid { top: 46%; left: 5%; min-width: 85px; border-color: var(--red); box-shadow: 0 0 15px #ff2a2a30; }
+.total-grid .label { color: #ffca9b; }
 
-.grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--gold); }
-.grid-volt .label { color: #ffda83; }
+.grid-volt { top: 72%; left: 5%; min-width: 80px; border-color: var(--red); }
+.grid-volt .label { color: #ffca9b; }
 
 .batt-soc { bottom: 23%; right: 5%; border-color:var(--batt-green); box-shadow: 0 0 15px #a6ff7030; }
 .batt-soc .label { color: #caff9c; }
@@ -217,7 +218,6 @@ body{
 .flow-line.cyan.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowRight 0.4s linear infinite; }
 .flow-line.cyan.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--cyan) 2px, var(--cyan) 6px); box-shadow: 0 0 8px var(--cyan); animation: flowLeft 0.4s linear infinite; }
 
-/* Reverted back to Red */
 .flow-line.red.horizontal { background: repeating-linear-gradient(to right, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowRight 0.4s linear infinite; }
 .flow-line.red.vertical { background: repeating-linear-gradient(to bottom, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowDown 0.4s linear infinite; }
 .flow-line.red.horizontal.reverse { background: repeating-linear-gradient(to left, transparent, transparent 2px, var(--red) 2px, var(--red) 6px); box-shadow: 0 0 8px var(--red); animation: flowLeft 0.4s linear infinite; }
@@ -417,14 +417,14 @@ body{
         <span class="energy-val-today" id="mTodayInv">—</span>
         <span class="energy-val-yest"><span id="yestLabel2">—</span> <span id="mYestInv">—</span></span>
       </div>
-      <div class="energy-card" style="border-color: var(--gold);">
-        <span class="energy-label" style="color: var(--gold);">2ND FLR GRID</span>
+      <div class="energy-card" style="border-color: var(--red);">
+        <span class="energy-label" style="color: var(--red);">2ND FLR GRID</span>
         <span class="dynamic-date" id="todayLabel3">—</span>
         <span class="energy-val-today" id="mTodayFloor">—</span>
         <span class="energy-val-yest"><span id="yestLabel3">—</span> <span id="mYestFloor">—</span></span>
       </div>
-      <div class="energy-card" style="border-color: var(--gold);">
-        <span class="energy-label" style="color: var(--gold);">TOTAL GRID</span>
+      <div class="energy-card" style="border-color: var(--red);">
+        <span class="energy-label" style="color: var(--red);">TOTAL GRID</span>
         <span class="dynamic-date" id="todayLabel4">—</span>
         <span class="energy-val-today" id="mTodayGrid">—</span>
         <span class="energy-val-yest"><span id="yestLabel4">—</span> <span id="mYestGrid">—</span></span>
