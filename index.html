@@ -836,7 +836,7 @@ function openPvModal() {
 
   const mpptEl = document.getElementById('modalMpptStatus');
   if (pvVolt === 0) {
-    mpptEl.textContent = 'getting no';
+    mpptEl.textContent = 'off, no';
     mpptEl.style.color = 'var(--off-gray)';
   } else if (pvVolt < 120) {
     mpptEl.textContent = 'receiving';
