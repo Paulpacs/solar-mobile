@@ -1179,7 +1179,7 @@ function drawCombinedChart() {
     hasData = true;
 
     const pts = data.map((v, i) => ({
-      x: pad + plotW - ((data.length - 1 - i) * (plotW / (MAX_POINTS - 1))),
+      x: pad + (data.length === 1 ? plotW / 2 : i * plotW / (MAX_POINTS - 1)),
       y: pad + plotH - (Math.min(max, Math.max(0, v)) / max) * plotH
     }));
 
