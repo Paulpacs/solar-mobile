@@ -1170,7 +1170,7 @@ function drawCombinedChart() {
     
     // Add labels for 500, 1000, 1500 (skip top 2000 and bottom 0)
     if (i > 0 && i < 4) {
-      const labelValue = i * 500;
+      const labelValue = (4 - i) * 500;
       // Dark halo so text is readable over grid lines
       ctx.fillStyle = '#03132a'; 
       ctx.fillText(labelValue, 2, y - 1); 
