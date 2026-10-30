@@ -402,8 +402,7 @@ body{
   </div>
 
   <div class="btn-energy" id="btnEnergy" onclick="openEnergyModal()">ENERGY<br>SUMMARY</div>
-
-  <div class="readout presence">
+    <div class="readout presence">
     <div class="presence-row"><span class="name">Kiana</span><span class="status" id="statusKiana">—</span></div>
     <div class="presence-row"><span class="name">Kyle</span><span class="status" id="statusKyle">—</span></div>
     <div class="presence-row"><span class="name">Krizza</span><span class="status" id="statusKrizza">—</span></div>
@@ -484,10 +483,10 @@ body{
     
     <div style="text-align: center; margin-bottom: 15px;">
       <div style="font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 4px;">SAMSUNG</div>
-      <div style="font-size: 11px; color: #a6d6f2;">1.5HP Air Conditioner, non-inverter window type.<br>Rated power: 1240W</div>
+      <div style="font-size: 11px; color: #a6d6f2;">1.5HP Air Conditioner, non-inverter window type.<br>Rated power: 1240W | Room Temp & Humidity</div>
     </div>
 
-    <div class="energy-grid" style="margin-bottom: 0;">
+    <div class="energy-grid" style="margin-bottom: 15px;">
       <div class="energy-card" id="acModalStatusCard">
         <span class="energy-label" id="acModalStatusLabel">STATUS</span>
         <span class="energy-val-today" id="acModalStatusValue" style="color: #fff;">OFF</span>
@@ -495,6 +494,18 @@ body{
       <div class="energy-card" id="acModalPowerCard">
         <span class="energy-label" id="acModalPowerLabel">POWER SUPPLY</span>
         <span class="energy-val-today" id="acModalPowerValue" style="color: #fff;">—</span>
+      </div>
+    </div>
+
+    <!-- NEW DATA ADDED BELOW -->
+    <div class="energy-grid" style="margin-bottom: 0;">
+      <div class="energy-card" id="acModalTempCard">
+        <span class="energy-label" id="acModalTempLabel">ROOM TEMP</span>
+        <span class="energy-val-today" id="acModalTempValue" style="color: #fff;">— °C</span>
+      </div>
+      <div class="energy-card" id="acModalHumCard">
+        <span class="energy-label" id="acModalHumLabel">HUMIDITY</span>
+        <span class="energy-val-today" id="acModalHumValue" style="color: #fff;">— %</span>
       </div>
     </div>
   </div>
@@ -684,7 +695,6 @@ body{
     </div>
   </div>
 </div>
-
 <!-- Weather Modal -->
 <div class="modal-overlay" id="weatherModal">
   <div class="modal-content" style="border-color: var(--gold); box-shadow: 0 0 30px #ffc24730;">
@@ -851,6 +861,12 @@ function openAcModal() {
   const powerValue = document.getElementById('acModalPowerValue');
   const header = document.getElementById('acModalHeader');
 
+  // New Data Elements
+  const tempCard = document.getElementById('acModalTempCard');
+  const tempLabel = document.getElementById('acModalTempLabel');
+  const humCard = document.getElementById('acModalHumCard');
+  const humLabel = document.getElementById('acModalHumLabel');
+
   const isInv = acCard.classList.contains('inv-mode');
   const isGrid = acCard.classList.contains('grid-mode');
   const isOff = !isInv && !isGrid;
@@ -869,6 +885,12 @@ function openAcModal() {
   statusLabel.style.color = themeColor;
   powerCard.style.borderColor = themeColor;
   powerLabel.style.color = themeColor;
+  
+  // Apply theme color to new data cards
+  tempCard.style.borderColor = themeColor;
+  tempLabel.style.color = themeColor;
+  humCard.style.borderColor = themeColor;
+  humLabel.style.color = themeColor;
 
   if (isOff) {
     statusValue.textContent = 'OFF';
@@ -877,16 +899,16 @@ function openAcModal() {
     powerValue.style.color = '#6b7280';
   } else {
     statusValue.textContent = 'ON';
-    statusValue.style.color = 'var(--green)';
     if (isInv) {
+      statusValue.style.color = 'var(--green)';
       powerValue.textContent = 'Solar';
       powerValue.style.color = 'var(--green)';
     } else {
+      statusValue.style.color = 'var(--red)';
       powerValue.textContent = 'Grid';
       powerValue.style.color = 'var(--red)';
     }
   }
-
   document.getElementById('acModal').classList.add('active');
 }
 function closeAcModal() {
@@ -1188,6 +1210,10 @@ async function fetchData() {
     const floorGrid = num(data.floor_grid);
     const irr = num(data.irradiance);
     const cloud = num(data.cloud_cover);
+    
+    // NEW JSON VALUES
+    const dhtTemp = num(data.dht_temp);
+    const dhtHum = num(data.dht_hum);
 
     show('pvpower', pvPower, 0);
     show('pvvoltage', num(data.pv_voltage), 1);
@@ -1263,6 +1289,7 @@ async function fetchData() {
 
     // --- AC CARD DYNAMIC THEME & LINE LOGIC ---
     const acCard = document.getElementById('acCard');
+    const acLabel = document.getElementById('acLabel');
     const acValue = document.getElementById('acValue');
     const acFlows = ['acFlow1', 'acFlow2', 'acFlow3'];
     const invToAcFlow = document.getElementById('invToAcFlow');
@@ -1273,17 +1300,38 @@ async function fetchData() {
     acFlows.forEach(id => document.getElementById(id).style.display = 'none');
     invToAcFlow.style.display = 'none';
 
+    // Update Title and Value based on AC State
     if (isAcInverter) {
-      acValue.textContent = 'ON';
+      acLabel.textContent = 'AIRCON ON';
       acCard.className = 'readout ac-read inv-mode';
       invToAcFlow.style.display = 'block';
     } else if (isAcGrid) {
-      acValue.textContent = 'ON';
+      acLabel.textContent = 'AIRCON ON';
       acCard.className = 'readout ac-read grid-mode';
       acFlows.forEach(id => document.getElementById(id).style.display = 'block');
     } else {
-      acValue.textContent = 'OFF';
+      acLabel.textContent = 'AIRCON OFF';
       acCard.className = 'readout ac-read';
+    }
+
+    // Update New Values inside the card (Temp & Hum)
+    if (acValue) {
+      const tempStr = dhtTemp !== null ? Math.round(dhtTemp) + '°C' : '—°C';
+      const humStr = dhtHum !== null ? Math.round(dhtHum) + '%' : '—%';
+      acValue.textContent = `${tempStr} H: ${humStr}`;
+    }
+
+    // Update New Values inside the popup (Temp & Hum)
+    if (dhtTemp !== null) {
+      document.getElementById('acModalTempValue').textContent = Math.round(dhtTemp) + ' °C';
+    } else {
+      document.getElementById('acModalTempValue').textContent = '— °C';
+    }
+    
+    if (dhtHum !== null) {
+      document.getElementById('acModalHumValue').textContent = Math.round(dhtHum) + ' %';
+    } else {
+      document.getElementById('acModalHumValue').textContent = '— %';
     }
 
     // --- PV FLOW LOGIC ---
