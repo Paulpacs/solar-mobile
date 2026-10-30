@@ -160,7 +160,7 @@ body{
 .presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
 .presence-row .name { color: var(--off-gray); }
 .presence-row .status { color: #6b7280; }
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); animation: breathe 2.5s ease-in-out infinite; }
+.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
 .device-status { 
   bottom: 1%; left: 52%; transform: translateX(-50%); width: 32%; height: 65px; 
@@ -170,7 +170,7 @@ body{
 .device-row { display: flex; justify-content: space-between; font-size: 9px; font-weight: 800; margin-bottom: 2px; }
 .device-row .name { color: var(--off-gray); margin-right: 8px;}
 .device-row .status { color: #ef4444; }
-.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); animation: breathe 2.5s ease-in-out infinite; }
+.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); }
 
 .graphs-container {
   display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -275,17 +275,26 @@ body{
 /* Inverter to AC Segment */
 .inv-to-ac { top: 42%; left: 75%; width: 3px; height: 12%; }
 
-/* --- GLOW ANIMATIONS --- */
-@keyframes breathe {
-  0% { box-shadow: 0 0 5px var(--glow-color, transparent); }
-  50% { box-shadow: 0 0 20px var(--glow-color, transparent); }
-  100% { box-shadow: 0 0 5px var(--glow-color, transparent); }
+/* --- NEON GLOW ANIMATIONS --- */
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 10px var(--glow-color, transparent), 0 0 20px var(--glow-color, transparent); }
+  50% { box-shadow: 0 0 15px var(--glow-color, transparent), 0 0 30px var(--glow-color, transparent); }
+  100% { box-shadow: 0 0 10px var(--glow-color, transparent), 0 0 20px var(--glow-color, transparent); }
 }
 
-.glow-cyan { --glow-color: #30e5ff80; animation: breathe 3s ease-in-out infinite; }
-.glow-green { --glow-color: #4cffb080; animation: breathe 3s ease-in-out infinite; }
-.glow-red { --glow-color: #ff2a2a80; animation: breathe 3s ease-in-out infinite; }
-.glow-batt { --glow-color: #a6ff7080; animation: breathe 3s ease-in-out infinite; }
+.glow-cyan { --glow-color: #30e5ff80; animation: neonPulse 1.5s ease-in-out infinite; }
+.glow-green { --glow-color: #4cffb080; animation: neonPulse 1.5s ease-in-out infinite; }
+.glow-red { --glow-color: #ff2a2a80; animation: neonPulse 1.5s ease-in-out infinite; }
+.glow-batt { --glow-color: #a6ff7080; animation: neonPulse 1.5s ease-in-out infinite; }
+
+/* Text glow for Presence and ESP */
+.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
+.device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
+@keyframes neonPulseText {
+  0% { text-shadow: 0 0 5px var(--glow-color, transparent); }
+  50% { text-shadow: 0 0 15px var(--glow-color, transparent); }
+  100% { text-shadow: 0 0 5px var(--glow-color, transparent); }
+}
 
 </style>
 </head>
