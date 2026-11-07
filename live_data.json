@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-11-07T21:37:48.108Z",
-  "epoch_time": "1794087465",
+  "updated_at": "2026-11-07T21:38:48.174Z",
+  "epoch_time": "1794087525",
   "battery_voltage": "51.90",
   "pv_power": "5.0",
-  "pv_voltage": "87.0",
+  "pv_voltage": "86.0",
   "inverter_power": "67.0",
   "floor_grid": "0.0",
   "total_grid": "228.5",
