@@ -152,18 +152,10 @@ body{
 }
 .btn-energy:active { background: #d1d5db30; }
 
-.presence { 
-  bottom: 1%; left: 7%; width: 28%; height: 65px; 
-  border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
-  display: flex; flex-direction: column; justify-content: center;
-}
-.presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
-.presence-row .name { color: var(--off-gray); }
-.presence-row .status { color: #6b7280; }
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
+/* Presence styles removed */
 
 .device-status { 
-  bottom: 1%; left: 52%; transform: translateX(-50%); width: 32%; height: 65px; 
+  bottom: 1%; left: 50%; transform: translateX(-50%); width: 60%; height: 65px; 
   border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
   display: flex; flex-direction: column; justify-content: center;
 }
@@ -174,11 +166,11 @@ body{
 
 .graphs-container {
   display: grid; 
-  grid-template-columns: 1fr; /* Changed from 1fr 1fr to full width */
+  grid-template-columns: 1fr;
   gap: 8px;
   height: 160px; 
-  margin-bottom: 10px; /* Give it space at the bottom */
-  padding-bottom: 5px; /* Prevents the canvas from bleeding off the edge */
+  margin-bottom: 10px;
+  padding-bottom: 5px;
 }
 .graph-card{
   background: var(--card-bg); border:1px solid #15416a;
@@ -288,8 +280,7 @@ body{
 .glow-red { --glow-color: #ff2a2a80; animation: neonPulse 1.5s ease-in-out infinite; }
 .glow-batt { --glow-color: #a6ff7080; animation: neonPulse 1.5s ease-in-out infinite; }
 
-/* Text glow for Presence and ESP */
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
+/* Text glow for ESP */
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
 @keyframes neonPulseText {
   0% { text-shadow: 0 0 5px var(--glow-color, transparent); }
@@ -403,11 +394,6 @@ body{
   </div>
 
   <div class="btn-energy" id="btnEnergy" onclick="openEnergyModal()">ENERGY<br>SUMMARY</div>
-    <div class="readout presence">
-    <div class="presence-row"><span class="name">Kiana</span><span class="status" id="statusKiana">—</span></div>
-    <div class="presence-row"><span class="name">Kyle</span><span class="status" id="statusKyle">—</span></div>
-    <div class="presence-row"><span class="name">Krizza</span><span class="status" id="statusKrizza">—</span></div>
-  </div>
   <div class="readout device-status">
     <div class="device-row"><span class="name">ESP129</span><span class="status" id="status129">—</span></div>
     <div class="device-row"><span class="name">ESP124</span><span class="status" id="status125">—</span></div>
@@ -1124,14 +1110,6 @@ function show(id, v, dec, unit='') {
   el.textContent = v === null ? '—' : v.toFixed(dec) + (unit ? ' '+unit : '');
 }
 
-function setPresence(id, val) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (val === 1) { el.textContent = 'HOME'; el.classList.add('home'); }
-  else if (val === 0) { el.textContent = 'AWAY'; el.classList.remove('home'); }
-  else { el.textContent = '—'; el.classList.remove('home'); }
-}
-
 function setDeviceStatus(id, val) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1331,9 +1309,7 @@ async function fetchData() {
       document.getElementById('cloudCover').textContent = '—';
     }
 
-    setPresence('statusKiana', num(data.kiana));
-    setPresence('statusKyle', num(data.kyle));
-    setPresence('statusKrizza', num(data.krizza));
+    // Presence display removed
 
     setDeviceStatus('status129', data.esp129_online);
     setDeviceStatus('status125', data.esp124_online); 
