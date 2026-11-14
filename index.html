@@ -152,16 +152,6 @@ body{
 }
 .btn-energy:active { background: #d1d5db30; }
 
-.presence { 
-  bottom: 1%; left: 7%; width: 28%; height: 65px; 
-  border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
-  display: flex; flex-direction: column; justify-content: center;
-}
-.presence-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
-.presence-row .name { color: var(--off-gray); }
-.presence-row .status { color: #6b7280; }
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); }
-
 .device-status { 
   bottom: 1%; left: 48%; transform: translateX(-50%); width: 37%; height: 65px; 
   border-color: #a6d6f2; box-shadow: 0 0 15px #a6d6f230; 
@@ -174,11 +164,11 @@ body{
 
 .graphs-container {
   display: grid; 
-  grid-template-columns: 1fr; /* Changed from 1fr 1fr to full width */
+  grid-template-columns: 1fr;
   gap: 8px;
   height: 160px; 
-  margin-bottom: 10px; /* Give it space at the bottom */
-  padding-bottom: 5px; /* Prevents the canvas from bleeding off the edge */
+  margin-bottom: 10px;
+  padding-bottom: 5px;
 }
 .graph-card{
   background: var(--card-bg); border:1px solid #15416a;
@@ -288,8 +278,7 @@ body{
 .glow-red { --glow-color: #ff2a2a80; animation: neonPulse 1.5s ease-in-out infinite; }
 .glow-batt { --glow-color: #a6ff7080; animation: neonPulse 1.5s ease-in-out infinite; }
 
-/* Text glow for Presence and ESP */
-.presence-row .status.home { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
+/* Text glow for ESP */
 .device-row .status.online { color: var(--green); text-shadow: 0 0 5px var(--green); animation: neonPulseText 1.5s ease-in-out infinite; }
 @keyframes neonPulseText {
   0% { text-shadow: 0 0 5px var(--glow-color, transparent); }
@@ -859,7 +848,6 @@ function openAcModal() {
   const powerValue = document.getElementById('acModalPowerValue');
   const header = document.getElementById('acModalHeader');
 
-  // New Data Elements
   const tempCard = document.getElementById('acModalTempCard');
   const tempLabel = document.getElementById('acModalTempLabel');
   const humCard = document.getElementById('acModalHumCard');
@@ -884,7 +872,6 @@ function openAcModal() {
   powerCard.style.borderColor = themeColor;
   powerLabel.style.color = themeColor;
   
-  // Apply theme color to new data cards
   tempCard.style.borderColor = themeColor;
   tempLabel.style.color = themeColor;
   humCard.style.borderColor = themeColor;
@@ -1119,14 +1106,6 @@ function show(id, v, dec, unit='') {
   el.textContent = v === null ? '—' : v.toFixed(dec) + (unit ? ' '+unit : '');
 }
 
-function setPresence(id, val) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (val === 1) { el.textContent = 'HOME'; el.classList.add('home'); }
-  else if (val === 0) { el.textContent = 'AWAY'; el.classList.remove('home'); }
-  else { el.textContent = '—'; el.classList.remove('home'); }
-}
-
 function setDeviceStatus(id, val) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1153,7 +1132,6 @@ function drawCombinedChart() {
   
   const pad = 4, plotH = h - 8, plotW = w - 8;
   
-  // Draw grid lines and labels
   ctx.strokeStyle = 'rgba(126,177,216,.14)';
   ctx.lineWidth = 1;
   ctx.font = '9px system-ui';
@@ -1162,34 +1140,25 @@ function drawCombinedChart() {
 
   for (let i = 0; i <= 4; i++) {
     const y = pad + plotH * i / 4;
-    
-    // Draw the line
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-    
-    // Add labels for 500, 1000, 1500 (skip top 2000 and bottom 0)
     if (i > 0 && i < 4) {
       const labelValue = (4 - i) * 500;
-      // Dark halo so text is readable over grid lines
       ctx.fillStyle = '#03132a'; 
       ctx.fillText(labelValue, 2, y - 1); 
-      // The actual text (dark grey)
       ctx.fillStyle = '#6b7280'; 
       ctx.fillText(labelValue, 2, y - 1);
     }
   }
 
-  // Config for the 3 lines
   const series = [
     { key: 'pv',   color: '#30e5ff', fill: 'rgba(48,229,255,.08)' },
     { key: 'grid', color: '#ff2a2a', fill: 'rgba(255,42,42,.08)' },
     { key: 'inv',  color: '#4cffb0', fill: 'rgba(76,255,176,.08)' }
   ];
 
-  // Fixed Y-axis max of 2000W
   const max = 2000;
   let hasData = false;
 
-  // Draw each series
   series.forEach(s => {
     const data = history[s.key];
     if (!data || !data.length) return;
@@ -1200,7 +1169,6 @@ function drawCombinedChart() {
       y: pad + plotH - (Math.min(max, Math.max(0, v)) / max) * plotH
     }));
 
-    // Fill area under line
     if (pts.length > 1) {
       ctx.beginPath();
       ctx.moveTo(pts[0].x, h - pad);
@@ -1211,7 +1179,6 @@ function drawCombinedChart() {
       ctx.fill();
     }
 
-    // Stroke the line
     ctx.beginPath();
     pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
     ctx.strokeStyle = s.color;
@@ -1223,7 +1190,6 @@ function drawCombinedChart() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Draw dot at the end
     const last = pts[pts.length - 1];
     ctx.beginPath();
     ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
@@ -1255,6 +1221,11 @@ async function fetchHistory() {
     const res = await fetch(HISTORY_API_URL + '?t=' + new Date().getTime());
     const apiData = await res.json();
     
+    if (!apiData.content) {
+      console.warn('History fetch failed: API rate limit hit or file not found.');
+      return;
+    }
+
     const decodedContent = atob(apiData.content.replace(/\s/g, ''));
     const data = JSON.parse(decodedContent);
 
@@ -1279,6 +1250,11 @@ async function fetchData() {
     const res = await fetch(GITHUB_API_URL + '?t=' + new Date().getTime());
     const apiData = await res.json();
     
+    if (!apiData.content) {
+      console.warn('Data fetch failed: API rate limit hit or file not found.');
+      return;
+    }
+
     const decodedContent = atob(apiData.content.replace(/\s/g, ''));
     const data = JSON.parse(decodedContent);
     
@@ -1291,7 +1267,6 @@ async function fetchData() {
     const irr = num(data.irradiance);
     const cloud = num(data.cloud_cover);
     
-    // NEW JSON VALUES
     const dhtTemp = num(data.dht_temp);
     const dhtHum = num(data.dht_hum);
 
@@ -1334,17 +1309,14 @@ async function fetchData() {
     if (invPower !== null) recordSample('inv', invPower);
     if (totalGrid !== null) recordSample('grid', totalGrid);
 
-    // --- GLOW LOGIC ---
     toggleGlow('cardPv', pvPower > 0, 'glow-cyan');
     toggleGlow('cardInv', invPower > 0, 'glow-green');
     toggleGlow('cardGrid', totalGrid > 0, 'glow-red');
     
-    // Battery glows if charging or discharging (not idle)
     const totalLoad = invPower + (invPower > 0 ? 100 : 0);
     const battActive = Math.abs(pvPower - totalLoad) > 10;
     toggleGlow('cardBattSoc', battActive, 'glow-batt');
 
-    // 2nd Floor Card Dynamic
     const floorCard = document.getElementById('floorGridCard');
     const floorLabel = document.getElementById('floorGridLabel');
     
@@ -1364,7 +1336,6 @@ async function fetchData() {
       floorCard.classList.remove('glow-green', 'glow-red');
     }
 
-    // --- AC CARD DYNAMIC THEME & LINE LOGIC ---
     const acCard = document.getElementById('acCard');
     const acLabel = document.getElementById('acLabel');
     const acValue = document.getElementById('acValue');
@@ -1377,7 +1348,6 @@ async function fetchData() {
     acFlows.forEach(id => document.getElementById(id).style.display = 'none');
     invToAcFlow.style.display = 'none';
 
-    // Update Title and Value based on AC State
     if (isAcInverter) {
       acLabel.textContent = 'AIRCON ON';
       acCard.className = 'readout ac-read inv-mode';
@@ -1391,14 +1361,12 @@ async function fetchData() {
       acCard.className = 'readout ac-read';
     }
 
-    // Update New Values inside the card (Temp & Hum)
     if (acValue) {
       const tempStr = dhtTemp !== null ? dhtTemp.toFixed(1) + '°C' : '—°C';
       const humStr = dhtHum !== null ? Math.round(dhtHum) + '%' : '—%';
       acValue.textContent = `${tempStr} H: ${humStr}`;
     }
 
-    // Update New Values inside the popup (Temp & Hum)
     if (dhtTemp !== null) {
       document.getElementById('acModalTempValue').textContent = dhtTemp.toFixed(1) + ' °C';
     } else {
@@ -1411,7 +1379,6 @@ async function fetchData() {
       document.getElementById('acModalHumValue').textContent = '— %';
     }
 
-    // --- PV FLOW LOGIC ---
     const pvFlows = ['flow1', 'flow2', 'flow3'];
     if (pvPower !== null && pvPower > 0) {
       pvFlows.forEach(id => document.getElementById(id).style.display = 'block');
@@ -1419,7 +1386,6 @@ async function fetchData() {
       pvFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // --- MAIN GRID FLOW LOGIC ---
     const gridFlows = ['gridFlow1a', 'gridFlow1b', 'gridFlow1c'];
     if (totalGrid !== null && totalGrid > 0) {
       gridFlows.forEach(id => document.getElementById(id).style.display = 'block');
@@ -1427,7 +1393,6 @@ async function fetchData() {
       gridFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // --- 2ND FLOOR GRID FLOW LOGIC ---
     const floorFlows = ['floorFlow1', 'floorFlow2', 'floorFlow3'];
     if (floorGrid !== null && floorGrid > 0) {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'block');
@@ -1435,7 +1400,6 @@ async function fetchData() {
       floorFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // --- BATTERY FLOW LOGIC ---
     const battFlows = ['battFlow1', 'battFlow2', 'battFlow3'];
     const battActiveFlow = (pvPower !== null && pvPower > 0) || (invPower !== null && invPower > 0);
     
@@ -1457,7 +1421,6 @@ async function fetchData() {
       battFlows.forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // --- INVERTER TO 2ND FLOOR FLOW LOGIC ---
     const invFlows = ['invFlow1', 'invFlow2', 'invFlow3'];
     if (invPower !== null && invPower > 0) {
       invFlows.forEach(id => document.getElementById(id).style.display = 'block');
@@ -1470,11 +1433,11 @@ async function fetchData() {
   }
 }
 
-fetchHistory(); // Pre-draws charts from history.json on load
+fetchHistory();
 fetchData();
-fetchWeather(); // Initial weather fetch
+fetchWeather();
 setInterval(fetchData, 60000);
-setInterval(fetchWeather, 600000); // Fetch weather every 10 mins
+setInterval(fetchWeather, 600000);
 window.addEventListener('resize', renderCharts);
 setTimeout(renderCharts, 500);
 
