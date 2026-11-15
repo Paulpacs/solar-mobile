@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-15T21:09:03.135Z",
-  "epoch_time": "1794776940",
+  "updated_at": "2026-11-15T21:10:02.558Z",
+  "epoch_time": "1794777000",
   "battery_voltage": "52.4",
   "pv_power": "0.0",
   "pv_voltage": "0.0",
@@ -16,7 +16,7 @@
   "esp124_online": "YES",
   "meter100_online": "YES",
   "irradiance": "0.0",
-  "cloud_cover": "42",
+  "cloud_cover": "38",
   "battery_soc": "47.0",
   "dht_temp": "28.5",
   "dht_hum": "83.3",
