@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-26T18:41:07.870Z",
-  "epoch_time": "1795718460",
+  "updated_at": "2026-11-26T18:42:07.756Z",
+  "epoch_time": "1795718520",
   "battery_voltage": "52.4",
   "pv_power": "0.0",
   "pv_voltage": "0.0",
@@ -19,7 +19,7 @@
   "cloud_cover": "39",
   "battery_soc": "47.0",
   "dht_temp": "28.5",
-  "dht_hum": "58.9",
+  "dht_hum": "59.1",
   "today_pv_kwh": "",
   "today_inverter_kwh": "",
   "today_floor_kwh": 0.549,
